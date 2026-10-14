@@ -38,12 +38,17 @@ export default async function DevLoginPage() {
           <span className="font-mono text-zinc-300"> docs/test-users.md</span>).
         </p>
       </div>
-      <div className="w-full max-w-sm bg-[#111116] border border-white/[0.08] rounded-2xl p-6 shadow-2xl">
-        <DevLoginForm />
-      </div>
-      <div className="flex items-center gap-2 text-xs text-zinc-500">
-        <span>Clerk session active:</span>
-        <AccountMenu />
+      <div className="w-full max-w-sm space-y-3">
+        <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#111116] border border-white/[0.08] text-xs text-zinc-400 shadow-md">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-zinc-300 font-medium">Clerk session active</span>
+          </div>
+          <AccountMenu />
+        </div>
+        <div className="bg-[#111116] border border-white/[0.08] rounded-2xl p-6 shadow-2xl">
+          <DevLoginForm />
+        </div>
       </div>
     </div>
   );

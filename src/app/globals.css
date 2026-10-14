@@ -82,3 +82,72 @@
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
+
+/* Clerk UserButton Popover & Modal Dark Theme Styling */
+.cl-userButtonPopoverCard,
+[class*="cl-userButtonPopoverCard"] {
+  background-color: #111116 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #f4f4f5 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7) !important;
+}
+
+.cl-userButtonPopoverActionButton,
+[class*="cl-userButtonPopoverActionButton"] {
+  color: #f4f4f5 !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.cl-userButtonPopoverActionButton:hover,
+[class*="cl-userButtonPopoverActionButton"]:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+.cl-userButtonPopoverActionButtonText,
+[class*="cl-userButtonPopoverActionButtonText"] {
+  color: #f4f4f5 !important;
+  font-weight: 500 !important;
+}
+
+.cl-userButtonPopoverActionButton:hover .cl-userButtonPopoverActionButtonText,
+.cl-userButtonPopoverActionButton:hover [class*="cl-userButtonPopoverActionButtonText"] {
+  color: #ffffff !important;
+}
+
+.cl-userButtonPopoverActionButtonIcon,
+.cl-userButtonPopoverActionButtonIconBox,
+[class*="cl-userButtonPopoverActionButtonIcon"],
+[class*="cl-userButtonPopoverActionButtonIconBox"] {
+  color: #d4d4d8 !important;
+}
+
+.cl-userButtonPopoverActionButtonIcon svg,
+[class*="cl-userButtonPopoverActionButtonIcon"] svg {
+  color: #d4d4d8 !important;
+  stroke: currentColor !important;
+}
+
+.cl-userButtonPopoverActionButton:hover .cl-userButtonPopoverActionButtonIcon,
+.cl-userButtonPopoverActionButton:hover .cl-userButtonPopoverActionButtonIcon svg,
+.cl-userButtonPopoverActionButton:hover [class*="cl-userButtonPopoverActionButtonIcon"],
+.cl-userButtonPopoverActionButton:hover [class*="cl-userButtonPopoverActionButtonIcon"] svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+.cl-userPreviewMainIdentifier,
+[class*="cl-userPreviewMainIdentifier"] {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.cl-userPreviewSecondaryIdentifier,
+[class*="cl-userPreviewSecondaryIdentifier"] {
+  color: #a1a1aa !important;
+}
+
+.cl-userButtonPopoverFooter,
+[class*="cl-userButtonPopoverFooter"] {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
