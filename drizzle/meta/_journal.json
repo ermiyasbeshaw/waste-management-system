@@ -1,0 +1,62 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791397723691,
+      "tag": "0000_init_users_facilities",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791397737827,
+      "tag": "0001_users_facility_type_and_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791397864329,
+      "tag": "0002_fix_null_role_checks",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791531569581,
+      "tag": "0003_gate2_full_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791531593353,
+      "tag": "0004_gate2_triggers",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791533279309,
+      "tag": "0005_codes_and_audit_chain",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791535734439,
+      "tag": "0006_idempotency_request_hash",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791722268923,
+      "tag": "0007_gate8_medicine_stock",
+      "breakpoints": true
+    }
+  ]
+}

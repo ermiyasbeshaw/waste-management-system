@@ -1,0 +1,23 @@
+# Secrets: never commit real environment files (CLAUDE.md §13). .env.example is the only one allowed.
+.env
+.env*.local
+.env.*
+!.env.example
+
+# Build output and dependencies
+node_modules/
+.next/
+out/
+tsconfig.tsbuildinfo
+next-env.d.ts
+
+# Stored files (certificate PDFs) of the development storage adapter
+.storage/
+
+# Test output
+test-results/
+playwright-report/
+coverage/
+
+# Local IDE and assistant settings
+.claude/

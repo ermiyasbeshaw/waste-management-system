@@ -1,0 +1,2 @@
+ALTER TABLE "idempotency_keys" ADD COLUMN "request_hash" text NOT NULL;--> statement-breakpoint
+ALTER TABLE "idempotency_keys" ADD CONSTRAINT "idempotency_keys_request_hash_format" CHECK ("idempotency_keys"."request_hash" ~ '^[0-9a-f]{64}$');
