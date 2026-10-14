@@ -27,6 +27,7 @@ import { DEFAULT_SETTINGS } from "../src/lib/validation/settings";
 import { seedOperations } from "./seed-operations";
 
 config({ path: ".env.local", quiet: true });
+config({ path: ".env", quiet: true });
 
 if (process.env.NODE_ENV === "production") {
   throw new Error("Refusing to seed: NODE_ENV is production.");
