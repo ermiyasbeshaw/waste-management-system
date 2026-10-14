@@ -17,7 +17,7 @@ export default async function PendingPage() {
         </div>
         <h1 className="text-xl font-bold text-white">Account Pending Role Assignment</h1>
 
-        {devBypass ? (
+        {devBypass || process.env.NODE_ENV === "development" ? (
           <p className="text-sm text-zinc-400 leading-relaxed">
             Development mode: this test login has no access.{" "}
             <Link href="/dev-login" className="text-emerald-400 underline">

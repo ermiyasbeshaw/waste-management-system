@@ -14,7 +14,10 @@ export { AREA_ROLES, HOME_BY_ROLE } from "./access-rules";
  * The service-level `requireRole` is still the check that matters for every action.
  */
 export async function requireAreaAccess(area: Area): Promise<User & ActiveUser> {
-  const signInPath = (await isDevBypassRequest()) ? "/dev-login" : "/pending";
+  const signInPath =
+    (await isDevBypassRequest()) || process.env.NODE_ENV === "development"
+      ? "/dev-login"
+      : "/pending";
   const decision = areaDecision(await getCurrentUser(), area, signInPath);
   if (!decision.allow) redirect(decision.redirectTo);
   return decision.user as User & ActiveUser;

@@ -34,14 +34,14 @@ export async function isDevBypassRequest(): Promise<boolean> {
 
 /** The verified development test-login session of this request, if any. */
 export async function getDevSession(): Promise<DevSession | null> {
-  if (!(await isDevBypassRequest()) || !env.DEV_LOGIN_SECRET) return null;
+  if (process.env.NODE_ENV !== "development" || !env.DEV_LOGIN_SECRET) return null;
   return verifyDevSessionToken(
     (await cookies()).get(DEV_SESSION_COOKIE)?.value,
     env.DEV_LOGIN_SECRET,
     DEV_ACCOUNTS,
     undefined,
-    // e2e identities only in the Playwright test mode (DEV_AUTH_BYPASS=1), see dev-session.ts.
-    { allowTestIdentities: env.DEV_AUTH_BYPASS === "1" }
+    // e2e identities only in the Playwright test mode (DEV_AUTH_BYPASS=1 or always), see dev-session.ts.
+    { allowTestIdentities: env.DEV_AUTH_BYPASS === "1" || env.DEV_AUTH_BYPASS === "always" }
   );
 }
 
@@ -53,6 +53,7 @@ async function findByClerkId(clerkUserId: string): Promise<User | null> {
 }
 
 export const getCurrentUser = cache(async (): Promise<User | null> => {
+  // Test bypass mode (e.g. Playwright test header):
   if (await isDevBypassRequest()) {
     const session = await getDevSession();
     if (!session) return null;
@@ -62,8 +63,28 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
     }
     return findByClerkId(`dev_${session.role}`);
   }
+
+  // 1. Clerk authentication FIRST (real browser traffic):
   const { userId } = await auth();
-  return userId ? findByClerkId(userId) : null;
+  if (!userId) return null;
+
+  // 2. Direct database mapping for this Clerk user ID:
+  const directUser = await findByClerkId(userId);
+  if (directUser) return directUser;
+
+  // 3. In development, if a role persona was selected after Clerk authentication:
+  if (process.env.NODE_ENV === "development") {
+    const session = await getDevSession();
+    if (session) {
+      if (TEST_IDENTITY.test(session.username)) {
+        const u = await findByClerkId(session.username);
+        return u && u.role === session.role ? u : null;
+      }
+      return findByClerkId(`dev_${session.role}`);
+    }
+  }
+
+  return null;
 });
 
 /** The active authentication identifier (Clerk user ID or dev username), even before a `users` row exists. */

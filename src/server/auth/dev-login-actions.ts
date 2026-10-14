@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { env } from "@/env";
 import { log } from "@/server/log";
@@ -15,7 +16,7 @@ import {
 } from "./dev-session";
 import { isDevBypassRequest } from "./current-user";
 
-/** Server actions for the development test login (/dev-login). Refused unless the dev bypass is active. */
+/** Server actions for the development test login (/dev-login). Requires Clerk authentication first. */
 
 export interface DevLoginState {
   error: string | null;
@@ -32,8 +33,12 @@ const MAX_FAILURES = 5;
 const LOCK_MS = 60_000;
 
 export async function devLogin(_prev: DevLoginState, formData: FormData): Promise<DevLoginState> {
-  if (!(await isDevBypassRequest()) || !env.DEV_LOGIN_SECRET) {
-    return { error: "Test login is not available here. Use the normal sign-in." };
+  const isDev = process.env.NODE_ENV === "development";
+  const { userId } = await auth();
+  const bypass = await isDevBypassRequest();
+
+  if (!isDev || (!bypass && !userId) || !env.DEV_LOGIN_SECRET) {
+    return { error: "Please sign in with Clerk first." };
   }
   const parsed = loginInput.safeParse({
     username: formData.get("username"),

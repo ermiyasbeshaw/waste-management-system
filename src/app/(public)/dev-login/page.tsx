@@ -1,33 +1,49 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { FlaskConical } from "lucide-react";
+import { auth } from "@clerk/nextjs/server";
 import { getDevSession, isDevBypassRequest } from "@/server/auth/current-user";
 import { HOME_BY_ROLE } from "@/server/auth/access-rules";
 import { DevLoginForm } from "@/components/dev/dev-login-form";
+import { AccountMenu } from "@/server/auth/clerk-ui";
 
 /**
- * /dev-login — development test login: one username + password per dashboard (docs/test-users.md).
- * Exists only while the development sign-in bypass is active (`next dev` on localhost). In production this
- * page is "not found" and everyone signs in with Clerk at /sign-in.
+ * /dev-login — development role workstation login (one username + password per role).
+ * Requires Clerk authentication FIRST: unauthenticated visitors are redirected to /sign-in.
  */
 export default async function DevLoginPage() {
-  if (!(await isDevBypassRequest())) notFound();
+  if (process.env.NODE_ENV !== "development") {
+    redirect("/sign-in");
+  }
+
+  // 1. CLERK AUTH FIRST: User must be signed in to Clerk (unless in automated test mode):
+  const bypass = await isDevBypassRequest();
+  const { userId } = await auth();
+  if (!bypass && !userId) {
+    redirect("/sign-in?redirect_url=/dev-login");
+  }
+
+  // 2. If a role session is already active, go directly to that role's home:
   const session = await getDevSession();
   if (session) redirect(HOME_BY_ROLE[session.role]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] gap-6 py-6">
       <div className="text-center space-y-2">
-        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+        <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto shadow-glow">
           <FlaskConical className="w-6 h-6" aria-hidden="true" />
         </div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">SafeWaste Test Login</h1>
+        <h1 className="text-2xl font-bold text-white tracking-tight">SafeWaste Role Selection</h1>
         <p className="text-sm text-zinc-400 max-w-sm">
-          Development only. Each dashboard has its own test username and password (see
+          Authenticated with Clerk. Select a role persona to open its workstation (credentials in
           <span className="font-mono text-zinc-300"> docs/test-users.md</span>).
         </p>
       </div>
       <div className="w-full max-w-sm bg-[#111116] border border-white/[0.08] rounded-2xl p-6 shadow-2xl">
         <DevLoginForm />
+      </div>
+      <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <span>Clerk session active:</span>
+        <AccountMenu />
       </div>
     </div>
   );
