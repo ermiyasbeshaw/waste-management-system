@@ -151,3 +151,80 @@
 [class*="cl-userButtonPopoverFooter"] {
   border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
+
+/* Clerk Social Buttons, Dividers, and Form Fields Dark Mode Visibility */
+.cl-socialButtonsBlockButton,
+[class*="cl-socialButtonsBlockButton"] {
+  background-color: #161622 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.cl-socialButtonsBlockButton:hover,
+[class*="cl-socialButtonsBlockButton"]:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.cl-socialButtonsBlockButtonText,
+[class*="cl-socialButtonsBlockButtonText"] {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+}
+
+.cl-socialButtonsProviderIcon,
+[class*="cl-socialButtonsProviderIcon"] {
+  opacity: 1 !important;
+}
+
+.cl-socialButtonsBlockButtonBadge,
+[class*="cl-socialButtonsBlockButtonBadge"] {
+  color: #d4d4d8 !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.cl-dividerLine,
+[class*="cl-dividerLine"] {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.cl-dividerText,
+[class*="cl-dividerText"] {
+  color: #a1a1aa !important;
+  font-weight: 500 !important;
+}
+
+.cl-formFieldLabel,
+[class*="cl-formFieldLabel"] {
+  color: #e4e4e7 !important;
+  font-weight: 500 !important;
+}
+
+.cl-formFieldInput,
+[class*="cl-formFieldInput"] {
+  background-color: #161622 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.cl-headerTitle,
+[class*="cl-headerTitle"] {
+  color: #ffffff !important;
+}
+
+.cl-headerSubtitle,
+[class*="cl-headerSubtitle"] {
+  color: #a1a1aa !important;
+}
+
+.cl-footerActionText,
+[class*="cl-footerActionText"] {
+  color: #a1a1aa !important;
+}
+
+.cl-footerActionLink,
+[class*="cl-footerActionLink"] {
+  color: #10b981 !important;
+}

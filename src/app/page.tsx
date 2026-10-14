@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 import { getAuthUserId, getCurrentUser, isDevBypassRequest } from "@/server/auth/current-user";
 import { HOME_BY_ROLE, hasAccess } from "@/server/auth/access-rules";
+import { HomePage } from "@/components/home/home-page";
 
 /**
- * `/`: replaces the public marketing page with direct authentication (Clerk first -> role login).
- * - Logged-in role users -> their dashboard (/admin, /hospital, etc.)
- * - Clerk-authenticated users -> /dev-login to select role persona
- * - Unauthenticated visitors -> /sign-in (Clerk authentication first)
+ * `/`: signed-in users go to the area of their role (CLAUDE.md §3), decided on the server from the `users` table;
+ * no users row, no role or inactive → /pending. Visitors who are not signed in see the public landing page, whose
+ * "Sign in" goes to /sign-in (Clerk auth first) and "Register" goes to /sign-up.
  */
 export default async function RootPage() {
   const user = await getCurrentUser();
@@ -22,9 +22,10 @@ export default async function RootPage() {
   }
 
   const devBypass = await isDevBypassRequest();
-  if (devBypass) {
-    redirect("/dev-login");
-  }
-
-  redirect("/sign-in");
+  return (
+    <HomePage
+      signInHref={devBypass ? "/dev-login" : "/sign-in"}
+      signUpHref={devBypass ? "/dev-login" : "/sign-up"}
+    />
+  );
 }

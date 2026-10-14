@@ -5,8 +5,10 @@
  * Pages and shared components import these wrappers, never `@clerk/*` directly.
  */
 import { SignIn, SignUp, SignedIn, UserButton } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 
 const appearance = {
+  baseTheme: dark,
   variables: {
     colorPrimary: "#10b981",
     colorBackground: "#111116",
@@ -17,12 +19,27 @@ const appearance = {
     borderRadius: "0.75rem",
   },
   elements: {
-    userButtonPopoverCard: "!bg-[#111116] !border !border-white/[0.12] !text-zinc-100 shadow-2xl",
-    userButtonPopoverActionButton: "!text-zinc-100 hover:!text-white hover:!bg-white/[0.08] transition-colors",
+    card: "!bg-[#111116] !border !border-white/[0.08] shadow-2xl",
+    socialButtonsBlockButton:
+      "!bg-[#161622] !border !border-white/[0.15] hover:!bg-white/[0.08] !text-white transition-colors",
+    socialButtonsBlockButtonText: "!text-white font-medium text-sm",
+    socialButtonsProviderIcon: "!opacity-100",
+    dividerLine: "!bg-white/[0.15]",
+    dividerText: "!text-zinc-300 font-medium",
+    formFieldLabel: "!text-zinc-200 font-medium",
+    formFieldInput:
+      "!bg-[#161622] !border !border-white/[0.15] !text-white placeholder:!text-zinc-500",
+    formButtonPrimary:
+      "!bg-emerald-500 hover:!bg-emerald-400 !text-black font-semibold shadow-glow",
+    footerActionText: "!text-zinc-300",
+    footerActionLink: "!text-emerald-400 hover:!text-emerald-300 font-medium",
+    userButtonPopoverCard: "!bg-[#111116] !border !border-white/[0.15] !text-zinc-100 shadow-2xl",
+    userButtonPopoverActionButton:
+      "!text-zinc-100 hover:!text-white hover:!bg-white/[0.08] transition-colors",
     userButtonPopoverActionButtonText: "!text-zinc-100 hover:!text-white font-medium text-sm",
     userButtonPopoverActionButtonIcon: "!text-zinc-300 hover:!text-white",
     userButtonPopoverActionButtonIconBox: "!text-zinc-300 hover:!text-white",
-    userButtonPopoverFooter: "!border-t !border-white/[0.08]",
+    userButtonPopoverFooter: "!border-t !border-white/[0.1]",
     userPreviewMainIdentifier: "!text-white font-semibold",
     userPreviewSecondaryIdentifier: "!text-zinc-400",
   },
