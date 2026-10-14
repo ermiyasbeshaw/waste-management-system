@@ -27,6 +27,7 @@ describe("parseEnv", () => {
     const env = parseEnv(VALID);
     expect(env.APP_BASE_URL).toBe("http://localhost:3000");
     expect(env.NEXT_PUBLIC_CLERK_SIGN_IN_URL).toBe("/sign-in");
+    expect(env.NEXT_PUBLIC_CLERK_SIGN_UP_URL).toBe("/sign-up");
     expect(env.CLERK_WEBHOOK_SECRET).toBeUndefined();
   });
 

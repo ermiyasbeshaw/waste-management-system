@@ -66,6 +66,17 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
   return userId ? findByClerkId(userId) : null;
 });
 
+/** The active authentication identifier (Clerk user ID or dev username), even before a `users` row exists. */
+export const getAuthUserId = cache(async (): Promise<string | null> => {
+  if (await isDevBypassRequest()) {
+    const session = await getDevSession();
+    if (!session) return null;
+    return TEST_IDENTITY.test(session.username) ? session.username : `dev_${session.role}`;
+  }
+  const { userId } = await auth();
+  return userId ?? null;
+});
+
 /** For layouts that must render even when the database is unreachable (e.g. public pages). */
 export async function getCurrentUserSafe(): Promise<User | null> {
   try {

@@ -113,6 +113,7 @@ export const publicEnvSchema = z.object({
     "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY must look like pk_test_… or pk_live_…"
   ),
   NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().trim().startsWith("/").default("/sign-in"),
+  NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().trim().startsWith("/").default("/sign-up"),
   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().trim().startsWith("/").default("/"),
   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().trim().startsWith("/").default("/"),
   NEXT_PUBLIC_MAP_TILE_URL: z

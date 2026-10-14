@@ -9,6 +9,7 @@ import { isDevAuthBypass } from "@/server/auth/dev-bypass";
 const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
+  "/sign-up(.*)",
   "/dev-login", // development test login; returns 404 unless the dev bypass is active
   "/verify(.*)",
   "/api/health",

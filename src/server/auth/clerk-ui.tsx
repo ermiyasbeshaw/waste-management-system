@@ -4,7 +4,7 @@
  * Clerk UI components, wrapped here so that all Clerk imports stay in src/server/auth/ (CLAUDE.md §2).
  * Pages and shared components import these wrappers, never `@clerk/*` directly.
  */
-import { SignIn, SignedIn, UserButton } from "@clerk/nextjs";
+import { SignIn, SignUp, SignedIn, UserButton } from "@clerk/nextjs";
 
 const appearance = {
   variables: {
@@ -18,9 +18,30 @@ const appearance = {
   },
 };
 
-/** The Clerk sign-in form (invitation-only: there is no sign-up link). */
+/** The Clerk sign-in form with sign-up link. */
 export function SignInPanel() {
-  return <SignIn routing="path" path="/sign-in" appearance={appearance} />;
+  return (
+    <SignIn
+      routing="path"
+      path="/sign-in"
+      signUpUrl="/sign-up"
+      fallbackRedirectUrl="/"
+      appearance={appearance}
+    />
+  );
+}
+
+/** The Clerk sign-up form with email OTP verification. */
+export function SignUpPanel() {
+  return (
+    <SignUp
+      routing="path"
+      path="/sign-up"
+      signInUrl="/sign-in"
+      fallbackRedirectUrl="/"
+      appearance={appearance}
+    />
+  );
 }
 
 /** Account menu with sign-out, shown only when a Clerk session exists. */

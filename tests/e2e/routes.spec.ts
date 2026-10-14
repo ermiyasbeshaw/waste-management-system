@@ -229,6 +229,11 @@ test.describe("public and redirect routes", () => {
     await expect(page.getByText("SafeWaste Portal")).toBeVisible();
   });
 
+  test("/sign-up renders", async ({ page }) => {
+    await page.goto("/sign-up");
+    await expect(page.getByText("Create an Account")).toBeVisible();
+  });
+
   test("/pending renders", async ({ page }) => {
     await page.goto("/pending");
     await expect(page.getByText("Account Pending Role Assignment")).toBeVisible();

@@ -1,7 +1,8 @@
+import Link from "next/link";
 import { Shield } from "lucide-react";
 import { SignInPanel } from "@/server/auth/clerk-ui";
 
-/** /sign-in — Clerk sign-in (accounts are invitation-only; there is no public sign-up). */
+/** /sign-in — Clerk sign-in. */
 export default function SignInPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] gap-6 py-6">
@@ -14,8 +15,13 @@ export default function SignInPage() {
       </div>
       <SignInPanel />
       <p className="text-xs text-zinc-500 max-w-sm text-center">
-        Access is by invitation only. Ask your facility administrator or the SafeWaste operations
-        team for an invitation.
+        Don&apos;t have an account yet?{" "}
+        <Link
+          href="/sign-up"
+          className="text-emerald-400 hover:text-emerald-300 underline font-medium"
+        >
+          Register with Clerk
+        </Link>
       </p>
     </div>
   );

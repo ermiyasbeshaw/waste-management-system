@@ -86,7 +86,13 @@ const AUDIENCES = [
   },
 ];
 
-export function HomePage({ signInHref }: { signInHref: string }) {
+export function HomePage({
+  signInHref,
+  signUpHref = "/sign-up",
+}: {
+  signInHref: string;
+  signUpHref?: string;
+}) {
   return (
     <div className="bg-[#08080a] text-zinc-100">
       {/* Utility bar */}
@@ -95,6 +101,11 @@ export function HomePage({ signInHref }: { signInHref: string }) {
           <a href="#verify" className="hover:text-zinc-200">
             Verify a certificate
           </a>
+          {signUpHref && (
+            <Link href={signUpHref} className="hover:text-zinc-200">
+              Register
+            </Link>
+          )}
           <Link href={signInHref} className="hover:text-zinc-200">
             Sign in
           </Link>
@@ -127,12 +138,22 @@ export function HomePage({ signInHref }: { signInHref: string }) {
               Verify
             </a>
           </nav>
-          <Link
-            href={signInHref}
-            className="min-h-[40px] px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-semibold inline-flex items-center gap-1.5"
-          >
-            Sign in <ArrowRight className="w-4 h-4" aria-hidden="true" />
-          </Link>
+          <div className="flex items-center gap-2">
+            {signUpHref && (
+              <Link
+                href={signUpHref}
+                className="hidden sm:inline-flex min-h-[40px] px-3.5 rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/[0.04] text-zinc-300 hover:text-white text-sm font-medium items-center transition-colors"
+              >
+                Register
+              </Link>
+            )}
+            <Link
+              href={signInHref}
+              className="min-h-[40px] px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-semibold inline-flex items-center gap-1.5 transition-colors"
+            >
+              Sign in <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -158,13 +179,21 @@ export function HomePage({ signInHref }: { signInHref: string }) {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href={signInHref}
-                className="min-h-[48px] px-6 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold inline-flex items-center gap-2"
+                className="min-h-[48px] px-6 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold inline-flex items-center gap-2 transition-colors"
               >
                 Sign in <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </Link>
+              {signUpHref && (
+                <Link
+                  href={signUpHref}
+                  className="min-h-[48px] px-6 rounded-xl border border-emerald-500/30 hover:border-emerald-500/60 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-semibold inline-flex items-center gap-2 transition-colors"
+                >
+                  Register with Clerk
+                </Link>
+              )}
               <a
                 href="#verify"
-                className="min-h-[48px] px-6 rounded-xl border border-white/[0.2] hover:bg-white/[0.06] text-white font-semibold inline-flex items-center gap-2"
+                className="min-h-[48px] px-6 rounded-xl border border-white/[0.2] hover:bg-white/[0.06] text-white font-semibold inline-flex items-center gap-2 transition-colors"
               >
                 Verify a certificate
               </a>
@@ -328,12 +357,22 @@ export function HomePage({ signInHref }: { signInHref: string }) {
             <p className="mt-3 text-zinc-400">
               Sign in to register waste, run trips, record destruction or review compliance.
             </p>
-            <Link
-              href={signInHref}
-              className="mt-8 min-h-[48px] px-6 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold inline-flex items-center gap-2"
-            >
-              Sign in <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href={signInHref}
+                className="min-h-[48px] px-6 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold inline-flex items-center gap-2 transition-colors"
+              >
+                Sign in <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+              {signUpHref && (
+                <Link
+                  href={signUpHref}
+                  className="min-h-[48px] px-6 rounded-xl border border-white/20 hover:border-white/40 hover:bg-white/[0.06] text-white font-semibold inline-flex items-center gap-2 transition-colors"
+                >
+                  Register with Clerk
+                </Link>
+              )}
+            </div>
           </div>
         </section>
       </main>
@@ -377,6 +416,13 @@ export function HomePage({ signInHref }: { signInHref: string }) {
                   Sign in
                 </Link>
               </li>
+              {signUpHref && (
+                <li>
+                  <Link href={signUpHref} className="hover:text-zinc-200">
+                    Register
+                  </Link>
+                </li>
+              )}
               <li>
                 <a href="#verify" className="hover:text-zinc-200">
                   Verify a certificate
