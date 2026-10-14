@@ -15,6 +15,7 @@ import { Pool } from "@neondatabase/serverless";
 import { AUDIT_CHAIN_LOCK_KEY, auditHash } from "../src/server/audit/hash";
 
 config({ path: ".env.local", quiet: true });
+config({ path: ".env", quiet: true });
 
 const ROLES = [
   "super_admin",

@@ -16,7 +16,11 @@ export function testDatabaseEnv(): { DATABASE_URL: string; DATABASE_URL_UNPOOLED
     );
   }
   const test = parse(readFileSync(".env.test.local"));
-  const dev = existsSync(".env.local") ? parse(readFileSync(".env.local")) : {};
+  const dev = existsSync(".env.local")
+    ? parse(readFileSync(".env.local"))
+    : existsSync(".env")
+      ? parse(readFileSync(".env"))
+      : {};
   const { DATABASE_URL, DATABASE_URL_UNPOOLED } = test;
   if (!DATABASE_URL || !DATABASE_URL_UNPOOLED) {
     throw new Error(".env.test.local must set DATABASE_URL and DATABASE_URL_UNPOOLED.");

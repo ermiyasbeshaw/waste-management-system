@@ -13,7 +13,7 @@
  * - Roles are NOT stored in Clerk. The "role" and "route" here are for linking each Clerk user to the
  *   `users` table (CLAUDE.md §4); the app reads the role from the database, never from Clerk.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "..");
@@ -41,7 +41,8 @@ const TEST_USERS = [
 ];
 
 function readEnvLocal() {
-  const text = readFileSync(resolve(ROOT, ".env.local"), "utf8");
+  const envFile = existsSync(resolve(ROOT, ".env.local")) ? ".env.local" : ".env";
+  const text = readFileSync(resolve(ROOT, envFile), "utf8");
   return Object.fromEntries(
     text
       .split(/\r?\n/)

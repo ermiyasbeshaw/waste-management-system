@@ -4,6 +4,7 @@ import { expect, test } from "@playwright/test";
 import { asIdentity, asRole, testDb } from "./helpers";
 
 config({ path: ".env.local", quiet: true });
+config({ path: ".env", quiet: true });
 
 /**
  * Gate 8 (CLAUDE.md §12): upload → expiry alert → disposal request → EFDA approves → the pharmaceutical waste is on

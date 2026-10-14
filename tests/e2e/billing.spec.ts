@@ -4,6 +4,7 @@ import { expect, test } from "@playwright/test";
 import { asRole, testDb } from "./helpers";
 
 config({ path: ".env.local", quiet: true });
+config({ path: ".env", quiet: true });
 
 /**
  * Gate 6: contracts, monthly drafts, issuing, exports, audit chain check — through the real UI and routes.

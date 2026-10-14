@@ -16,6 +16,7 @@ import { config } from "dotenv";
 import { Pool } from "@neondatabase/serverless";
 
 config({ path: ".env.local", quiet: true });
+config({ path: ".env", quiet: true });
 
 if (process.env.NODE_ENV === "production")
   throw new Error("Refusing to run: NODE_ENV is production.");

@@ -2,6 +2,7 @@ import { config } from "dotenv";
 import { expect, test } from "@playwright/test";
 
 config({ path: ".env.local", quiet: true });
+config({ path: ".env", quiet: true });
 
 /** POST /api/jobs/outbox is public but protected by CRON_SECRET (CLAUDE.md §3, §6). */
 test.describe("outbox job route", () => {

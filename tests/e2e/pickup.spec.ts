@@ -1,5 +1,5 @@
 import { randomInt, randomUUID } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { parse } from "dotenv";
 import { unseal } from "../../src/server/outbox/seal";
@@ -11,7 +11,9 @@ import { asIdentity, asRole, testDb } from "./helpers";
  * `e2e_…` identities, so runs are repeatable and the seeded demo data is never touched.
  */
 
-const OUTBOX_KEY = parse(readFileSync(".env.local")).OUTBOX_ENCRYPTION_KEY;
+const OUTBOX_KEY = parse(
+  readFileSync(existsSync(".env.local") ? ".env.local" : ".env")
+).OUTBOX_ENCRYPTION_KEY;
 const letters = () =>
   Array.from({ length: 3 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ"[randomInt(24)]).join("");
 const digits = (n: number) => String(randomInt(10 ** n)).padStart(n, "0");
