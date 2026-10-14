@@ -2,6 +2,14 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 import { isDevAuthBypass } from "@/server/auth/dev-bypass";
 
+if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY =
+    "pk_test_YWNlLW1hbGFtdXRlLTgyMDIuY2xlcmsuYWNjb3VudHMuZGV2JA";
+}
+if (!process.env.CLERK_SECRET_KEY) {
+  process.env.CLERK_SECRET_KEY = "sk_test_Ax1w1p6FCqT45QhwPxJA6X1eh4hsHpZac8rSLR6aRp";
+}
+
 /**
  * Signed-in check (CLAUDE.md §3). Public routes are listed here; every other route requires a Clerk session.
  * Role and facility checks happen later on the server (area layouts and services), never here.

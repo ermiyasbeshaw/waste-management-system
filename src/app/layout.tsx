@@ -23,7 +23,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" className="dark">
       <body className="bg-[#08080a] text-zinc-100 min-h-screen antialiased">
         {/* ClerkProvider: identity only (CLAUDE.md §2). Roles come from the users table, not from Clerk. */}
-        <ClerkProvider>
+        <ClerkProvider
+          publishableKey={
+            process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+            "pk_test_YWNlLW1hbGFtdXRlLTgyMDIuY2xlcmsuYWNjb3VudHMuZGV2JA"
+          }
+        >
           <DevRoleProvider initialRole={role} fullName={fullName} devUsername={devUsername}>
             {children}
           </DevRoleProvider>

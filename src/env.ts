@@ -15,15 +15,15 @@ const isBuildPhase =
 
 const BUILD_FALLBACKS: Record<string, string> = {
   DATABASE_URL:
-    "postgresql://builduser:buildpass@ep-mock-pooler.neon.tech/neondb?sslmode=require",
+    "postgresql://neondb_owner:npg_m7TVjH2xQqgz@ep-soft-bar-b1md10na-pooler.c-5.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
   DATABASE_URL_UNPOOLED:
-    "postgresql://builduser:buildpass@ep-mock.neon.tech/neondb?sslmode=require",
-  CLERK_SECRET_KEY: "sk_test_buildMockSecretKeyForVercelDeployment123",
+    "postgresql://neondb_owner:npg_m7TVjH2xQqgz@ep-soft-bar-b1md10na.c-5.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+  CLERK_SECRET_KEY: "sk_test_Ax1w1p6FCqT45QhwPxJA6X1eh4hsHpZac8rSLR6aRp",
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
-    "pk_test_YnVpbGRNb2NrS2V5Rm9yVmVyY2VsRGVwbG95bWVudDEyMyQ",
-  CRON_SECRET: "0123456789abcdef0123456789abcdef",
+    "pk_test_YWNlLW1hbGFtdXRlLTgyMDIuY2xlcmsuYWNjb3VudHMuZGV2JA",
+  CRON_SECRET: "dd763e4f30a948e350be06c9495386c158ac8b8caf831f8ba475caf95053e217",
   OUTBOX_ENCRYPTION_KEY:
-    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "82b597e7c1eac286c86d2553d42524c23ab546e1db7f11de60ce7699f10b10c7",
   APP_BASE_URL: "https://safewaste.vercel.app",
 };
 
