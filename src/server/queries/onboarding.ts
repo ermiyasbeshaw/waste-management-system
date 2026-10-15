@@ -111,6 +111,7 @@ export const getPendingOnboardingRequestsForAdmin = cache(
       FROM onboarding_requests r
       LEFT JOIN facilities f ON f.id = r.facility_id
       WHERE r.status = 'PENDING_REVIEW'
+        AND r.requested_role != 'hospital_staff'
       ORDER BY r.created_at ASC
       LIMIT 100
     `);

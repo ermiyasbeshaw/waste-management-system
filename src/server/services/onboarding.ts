@@ -353,15 +353,12 @@ export async function approveOnboardingRequest(onboardingId: string, requestId?:
 
     // Approval Hierarchy Authorization:
     if (req.requestedRole === "hospital_staff") {
-      // Must be Super Admin OR Hospital Admin of the SAME facility
-      const isSuperAdmin = actorRole === "super_admin";
-      const isOwnHospitalAdmin =
-        actorRole === "hospital_admin" && actor.facilityId === req.facilityId;
-      if (!isSuperAdmin && !isOwnHospitalAdmin) {
+      // Must be verified strictly by Hospital Admin of the SAME facility (not Super Admin)
+      if (actorRole !== "hospital_admin" || actor.facilityId !== req.facilityId) {
         throw new AppError(
           "FORBIDDEN",
           403,
-          "Only the Hospital Administrator of this facility or a Super Administrator can approve staff requests."
+          "Hospital staff requests must be verified and approved by the Hospital Administrator of their facility, not by the Super Administrator."
         );
       }
       // Hospital must be approved and active
@@ -573,11 +570,12 @@ export async function rejectOnboardingRequest(
     }
 
     if (req.requestedRole === "hospital_staff") {
-      const isSuperAdmin = actorRole === "super_admin";
-      const isOwnHospitalAdmin =
-        actorRole === "hospital_admin" && actor.facilityId === req.facilityId;
-      if (!isSuperAdmin && !isOwnHospitalAdmin) {
-        throw new AppError("FORBIDDEN", 403, "You cannot reject requests for another facility.");
+      if (actorRole !== "hospital_admin" || actor.facilityId !== req.facilityId) {
+        throw new AppError(
+          "FORBIDDEN",
+          403,
+          "Hospital staff requests must be reviewed and rejected strictly by the Hospital Administrator of their facility."
+        );
       }
     } else {
       if (actorRole !== "super_admin") {

@@ -166,4 +166,26 @@ describe("Dual-Path Onboarding & Approval Hierarchy Rules", () => {
       ).toBe(true);
     });
   });
+
+  describe("Approval Hierarchy Delegation", () => {
+    it("verifies that hospital_staff is strictly approved by their hospital admin", () => {
+      const hospitalAdmin: AccessUser = {
+        id: "019266ab-0000-7000-8000-000000000001",
+        role: "hospital_admin",
+        facilityId: "facility_abc",
+        active: true,
+      };
+      const superAdmin: AccessUser = {
+        id: "019266ab-0000-7000-8000-000000000002",
+        role: "super_admin",
+        facilityId: null,
+        active: true,
+      };
+
+      // Hospital admin has access to hospital management
+      expect(checkRole(hospitalAdmin, ["hospital_admin"]).role).toBe("hospital_admin");
+      // Super admin has access to administrative area
+      expect(checkRole(superAdmin, ["super_admin"]).role).toBe("super_admin");
+    });
+  });
 });

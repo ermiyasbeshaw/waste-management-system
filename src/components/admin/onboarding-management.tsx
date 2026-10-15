@@ -75,7 +75,7 @@ export function AdminOnboardingTable({
             </span>
           </div>
           <p className="text-xs text-zinc-400 mt-1">
-            Path A self-registration requests awaiting administrator approval hierarchy review.
+            Path A self-registration requests awaiting Super Admin review. (Hospital staff requests are verified directly by each hospital's administrator).
           </p>
         </div>
 
