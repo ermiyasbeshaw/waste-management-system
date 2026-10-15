@@ -451,40 +451,41 @@ const MATRIX: Entry[] = [
     allowed: ["super_admin", "efda_officer"],
     call: () => checkAuditChain(),
   },
-  // Medicine stock and expiry (CLAUDE.md §12, Gate 8): hospital roles own facility; SA / EFDA read all; EFDA alone
+  // Medicine stock and expiry (CLAUDE.md §12, Gate 8): hospital roles own facility; hospital_staff writes stock;
+  // hospital_admin reads stock and creates disposal requests; SA / EFDA read all; EFDA alone
   // decides requests; driver and disposal operator have no access at all.
   {
     capability: "stock",
     name: "previewStockFile",
-    allowed: HOSP,
+    allowed: ["hospital_staff"],
     write: true,
     call: () => medicine.previewStockFile({ name: "x.csv", bytes: new Uint8Array() }),
   },
   {
     capability: "stock",
     name: "saveStockImport",
-    allowed: HOSP,
+    allowed: ["hospital_staff"],
     write: true,
     call: () => medicine.saveStockImport({}),
   },
   {
     capability: "stock",
     name: "addStockLine",
-    allowed: HOSP,
+    allowed: ["hospital_staff"],
     write: true,
     call: () => medicine.addStockLine({}),
   },
   {
     capability: "stock",
     name: "updateStockLine",
-    allowed: HOSP,
+    allowed: ["hospital_staff"],
     write: true,
     call: () => medicine.updateStockLine(NOBODY, {}),
   },
   {
     capability: "stock",
     name: "archiveStockLine",
-    allowed: HOSP,
+    allowed: ["hospital_staff"],
     write: true,
     call: () => medicine.archiveStockLine(NOBODY),
   },

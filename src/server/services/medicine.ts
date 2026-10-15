@@ -28,7 +28,8 @@ import { registerWasteTx } from "./waste";
 
 /**
  * Medicine stock and expiry (CLAUDE.md §12, modules 21–22, Gate 8). Writes:
- * - hospital_admin / hospital_staff: their OWN facility's stock (import, add, edit, archive) and disposal requests;
+ * - hospital_staff: their OWN facility's stock (import, add, edit, archive);
+ * - hospital_admin: read-only on stock; creates disposal requests;
  * - efda_officer: ONLY approve / reject disposal requests (Workflow Engine);
  * - super_admin: read only here; driver and disposal_operator: no access at all.
  * Every change is audited; messages go through the outbox; nothing is ever hard-deleted.
@@ -51,6 +52,13 @@ async function hospitalUser(): Promise<ActiveUser & { facilityId: string }> {
   return user as ActiveUser & { facilityId: string };
 }
 
+async function hospitalStaffUser(): Promise<ActiveUser & { facilityId: string }> {
+  const user = await requireRole("hospital_staff");
+  if (!user.facilityId)
+    throw new AppError("FORBIDDEN", 403, "Your account is not linked to a facility.");
+  return user as ActiveUser & { facilityId: string };
+}
+
 // ---------------------------------------------------------------- 8.2 stock import
 
 /** Reads an uploaded CSV / XLSX file and returns the rows with their errors. Nothing is saved. */
@@ -58,7 +66,7 @@ export async function previewStockFile(file: {
   name: string;
   bytes: Uint8Array;
 }): Promise<ImportPreview> {
-  await hospitalUser();
+  await hospitalStaffUser();
   if (file.bytes.byteLength === 0)
     throw new AppError("VALIDATION_ERROR", 422, "The file is empty.");
   if (file.bytes.byteLength > MAX_FILE_BYTES) {
@@ -106,7 +114,7 @@ const snapshot = (r: Pick<StockRowDb, "quantity" | "unit" | "expiry_date" | "act
  * One audit entry lists every change (before / after).
  */
 export async function saveStockImport(raw: unknown, requestId?: string) {
-  const user = await hospitalUser();
+  const user = await hospitalStaffUser();
   const lines = (raw as { lines?: unknown } | null)?.lines;
   if (!Array.isArray(lines) || lines.length === 0) {
     throw new AppError("VALIDATION_ERROR", 422, "There are no stock lines to save.");
@@ -182,7 +190,7 @@ export async function saveStockImport(raw: unknown, requestId?: string) {
 
 /** Adds one line by hand (a line with the same item / strength / form / batch must be edited instead). */
 export async function addStockLine(raw: unknown, requestId?: string) {
-  const user = await hospitalUser();
+  const user = await hospitalStaffUser();
   const parsed = stockLineSchema.safeParse(raw);
   if (!parsed.success) throw invalid(parsed.error);
   const l = parsed.data;
@@ -233,7 +241,7 @@ async function ownLine(tx: DbExecutor, user: ActiveUser & { facilityId: string }
 
 /** Edits one line (history: the audit log keeps the values before and after). */
 export async function updateStockLine(id: string, raw: unknown, requestId?: string) {
-  const user = await hospitalUser();
+  const user = await hospitalStaffUser();
   const parsed = stockLineSchema.safeParse(raw);
   if (!parsed.success) throw invalid(parsed.error);
   const l = parsed.data;
@@ -274,7 +282,7 @@ export async function updateStockLine(id: string, raw: unknown, requestId?: stri
 
 /** Removes a line from the list without deleting it (history kept). */
 export async function archiveStockLine(id: string, requestId?: string) {
-  const user = await hospitalUser();
+  const user = await hospitalStaffUser();
   return inWorkflow(async (tx) => {
     const old = await ownLine(tx, user, id);
     if (!old.active) throw new AppError("CONFLICT", 409, "This line is already archived.");

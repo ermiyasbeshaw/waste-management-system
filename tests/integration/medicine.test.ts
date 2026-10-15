@@ -130,12 +130,19 @@ describe("8.2 stock (scope and history)", () => {
     expect(await seenBy(dev.efda_officer, a.code)).toEqual(["A-1", "A-2"]);
     expect(await seenBy(dev.super_admin, a.code)).toEqual(["A-1", "A-2"]);
 
-    session = b.admin;
+    session = b.staff;
     expect(await refusal(updateStockLine(a1.id, line("A-1", 1, "2027-06-30")))).toBe(
       "404 NOT_FOUND"
     );
     expect(await refusal(archiveStockLine(a1.id))).toBe("404 NOT_FOUND");
-    for (const u of [dev.driver, dev.disposal_operator, dev.efda_officer, dev.super_admin]) {
+    for (const u of [
+      dev.driver,
+      dev.disposal_operator,
+      dev.efda_officer,
+      dev.super_admin,
+      a.admin,
+      b.admin,
+    ]) {
       session = u;
       expect(await refusal(saveStockImport({ lines: [line("X", 1, "2027-01-01")] })), u.role).toBe(
         "403 FORBIDDEN"
@@ -148,7 +155,7 @@ describe("8.2 stock (scope and history)", () => {
       expect(await refusal(getDisposalRequests()), u.role).toBe("403 FORBIDDEN");
     }
 
-    session = a.admin;
+    session = a.staff;
     await updateStockLine(a1.id, line("A-1", 75, "2027-05-31"));
     await archiveStockLine((await stockIdOf(a.facilityId, "A-2")).id);
     const audit = await q<{ action: string }>(
@@ -214,7 +221,7 @@ describe("8.4 disposal requests", () => {
     session = a.staff;
     await saveStockImport({ lines: [line("RQ-1", 100, plusDays(today, 5))] });
     const stock = await stockIdOf(a.facilityId, "RQ-1");
-    session = b.admin;
+    session = b.staff;
     await saveStockImport({ lines: [line("RQ-B", 5, "2027-01-01")] });
     const bStock = await stockIdOf(b.facilityId, "RQ-B");
 

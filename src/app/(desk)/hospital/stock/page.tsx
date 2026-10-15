@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getCurrentUser } from "@/server/auth/current-user";
 import { getStockAlerts, getStockPage, parseStockFilter } from "@/server/queries/medicine";
 import { StockAlertsPanel } from "@/components/medicine/stock-alerts-panel";
 import { StockFilters } from "@/components/medicine/stock-filters";
@@ -11,6 +12,8 @@ type Props = { searchParams?: Record<string, string | string[] | undefined> };
 
 /** /hospital/stock — the facility's medicine stock (CLAUDE.md §12): upload, add, edit, expiry alerts. Own facility. */
 export default async function HospitalStockPage(props: Props) {
+  const user = await getCurrentUser();
+  const isStaff = user?.role === "hospital_staff";
   const searchParams = await props.searchParams;
   const filter = parseStockFilter(searchParams?.filter);
   const after = typeof searchParams?.after === "string" ? searchParams.after : null;
@@ -27,10 +30,21 @@ export default async function HospitalStockPage(props: Props) {
         <ExportLinks report="stock" label="stock" />
       </div>
       <StockAlertsPanel rows={alerts} showFacility={false} href="/hospital/stock?filter=expiring" />
-      <StockUpload />
-      <StockLineForm />
+      {isStaff ? (
+        <>
+          <StockUpload />
+          <StockLineForm />
+        </>
+      ) : (
+        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-xs text-zinc-300">
+          <p className="font-semibold text-emerald-400">Hospital Administrator View (Read-Only)</p>
+          <p className="mt-1 text-zinc-400">
+            You have view-only access to facility medicine stock and expiry alerts. Medicine recording, batch entry, uploads, and edits are strictly managed by Hospital Staff.
+          </p>
+        </div>
+      )}
       <StockFilters basePath="/hospital/stock" filter={filter} facilityCode={null} />
-      <StockTable rows={page.rows} editable showFacility={false} />
+      <StockTable rows={page.rows} editable={isStaff} showFacility={false} />
       {page.nextCursor && (
         <Link
           href={`/hospital/stock?${new URLSearchParams({ ...(filter !== "all" ? { filter } : {}), after: page.nextCursor })}`}
