@@ -305,7 +305,7 @@ export async function archiveStockLine(id: string, requestId?: string) {
 /**
  * Daily expiry check (CLAUDE.md §12): for every active line with stock left, each reached threshold
  * (`expiry_alert_days` and the expiry day) is recorded once. One email per facility and recipient lists the lines
- * that got a new alert (facility hospital_admin users + every efda_officer). No SMS.
+ * that got a new alert (facility hospital_staff + hospital_admin users + every efda_officer). No SMS.
  */
 export async function computeStockExpiryAlerts(day: string = today(), requestId?: string) {
   return inWorkflow(async (tx) => {
@@ -376,13 +376,13 @@ export async function computeStockExpiryAlerts(day: string = today(), requestId?
       sql`SELECT email FROM users WHERE role = 'efda_officer' AND active AND email IS NOT NULL LIMIT 50`
     );
     for (const [facilityId, { name, hits }] of Array.from(byFacility.entries())) {
-      const admins = await all<{ email: string }>(
+      const facilityUsers = await all<{ email: string }>(
         tx,
-        sql`SELECT email FROM users WHERE facility_id = ${facilityId} AND role = 'hospital_admin'
-              AND active AND email IS NOT NULL LIMIT 20`
+        sql`SELECT email FROM users WHERE facility_id = ${facilityId} AND role IN ('hospital_admin', 'hospital_staff')
+              AND active AND email IS NOT NULL LIMIT 50`
       );
       const recipients = Array.from(
-        new Set([...admins, ...efda].map((r) => r.email.toLowerCase()))
+        new Set([...facilityUsers, ...efda].map((r) => r.email.toLowerCase()))
       );
       for (const to of recipients) {
         await enqueueMessage(tx, {

@@ -83,7 +83,14 @@ async function clinic() {
   };
   const admin = await mk("hospital_admin");
   const staff = await mk("hospital_staff");
-  return { code, facilityId: f.id, admin: admin.user, adminEmail: admin.email, staff: staff.user };
+  return {
+    code,
+    facilityId: f.id,
+    admin: admin.user,
+    adminEmail: admin.email,
+    staff: staff.user,
+    staffEmail: staff.email,
+  };
 }
 
 const line = (batch: string, quantity: number, expiryDate: string) => ({
@@ -195,17 +202,20 @@ describe("8.3 expiry alerts", () => {
     await computeStockExpiryAlerts(today);
     expect(await thresholds()).toEqual([90, 30]);
     expect(await mails(a.adminEmail)).toHaveLength(1);
+    expect(await mails(a.staffEmail)).toHaveLength(1);
     expect(await mails(efdaEmail)).toHaveLength(1);
 
     await computeStockExpiryAlerts(today); // same day again: nothing new
     expect(await thresholds()).toEqual([90, 30]);
     expect(await mails(a.adminEmail)).toHaveLength(1);
+    expect(await mails(a.staffEmail)).toHaveLength(1);
 
     await computeStockExpiryAlerts(plusDays(today, 14)); // 6 days left
     expect(await thresholds()).toEqual([90, 30, 7]);
     await computeStockExpiryAlerts(plusDays(today, 20)); // the expiry day
     expect(await thresholds()).toEqual([90, 30, 7, 0]);
     expect(await mails(a.adminEmail)).toHaveLength(3);
+    expect(await mails(a.staffEmail)).toHaveLength(3);
 
     session = a.staff;
     expect((await getStockAlerts()).map((x) => x.batch)).toContain("EXP-1");

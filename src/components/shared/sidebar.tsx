@@ -37,7 +37,6 @@ export function Sidebar() {
           { href: "/admin/contracts", label: "Contracts & Renewals", icon: FileCheck },
           { href: "/admin/categories", label: "Waste Categories", icon: Activity },
           { href: "/admin/alerts", label: "System Alerts", icon: AlertCircle },
-          { href: "/admin/stock", label: "Medicine Stock", icon: Pill },
         ];
       case "hospital_admin":
       case "hospital_staff":
