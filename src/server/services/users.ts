@@ -16,10 +16,11 @@ export async function syncClerkUser(
   requestId?: string
 ): Promise<{ result: "created" | "updated" | "deactivated" | "unknown_user" }> {
   return inWorkflow(async (tx) => {
+    const email = (evt.email ?? `${evt.clerkUserId}@placeholder.internal`).toLowerCase();
     const row = (
       await tx.execute(
         sql`SELECT id, email, phone_e164, phone_verified, receives_pickup_otp, active
-            FROM users WHERE clerk_user_id = ${evt.clerkUserId} FOR UPDATE`
+            FROM users WHERE clerk_user_id = ${evt.clerkUserId} OR email = ${email} FOR UPDATE`
       )
     ).rows[0] as
       | {
@@ -36,7 +37,6 @@ export async function syncClerkUser(
       if (evt.type === "user.deleted") return { result: "unknown_user" as const };
 
       // Fail-closed initialization: create user with role=null and active=false (zero operational access).
-      const email = (evt.email ?? `${evt.clerkUserId}@placeholder.internal`).toLowerCase();
       const fullName = evt.fullName?.trim() || "New User";
       const phoneVerified = evt.phoneE164 !== null && evt.phoneVerified;
       const inserted = (
@@ -79,11 +79,10 @@ export async function syncClerkUser(
       return { result: "deactivated" as const };
     }
 
-    const email = evt.email ?? row.email;
     const phoneVerified = evt.phoneE164 !== null && evt.phoneVerified;
     const receives = row.receives_pickup_otp && phoneVerified;
     await tx.execute(
-      sql`UPDATE users SET email = ${email}, phone_e164 = ${evt.phoneE164}, phone_verified = ${phoneVerified},
+      sql`UPDATE users SET clerk_user_id = ${evt.clerkUserId}, email = ${email}, phone_e164 = ${evt.phoneE164}, phone_verified = ${phoneVerified},
                            receives_pickup_otp = ${receives}
           WHERE id = ${row.id}`
     );

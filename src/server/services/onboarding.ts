@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, eq, ne, or, sql } from "drizzle-orm";
 import {
   onboardingRequestSchema,
   provisionUserSchema,
@@ -69,16 +69,16 @@ export async function submitOnboardingRequest(
   const data = parsed.data;
 
   return inWorkflow(async (tx) => {
-    // Check if user is already an approved active user:
-    const [existingUser] = await tx
-      .select({ id: users.id, role: users.role, active: users.active })
-      .from(users)
-      .where(eq(users.clerkUserId, clerkUserId))
-      .limit(1);
+    const normalizedEmail = data.email.trim().toLowerCase();
+    const fullName = data.fullName.trim();
+    const phoneE164 = data.phoneE164?.trim() || null;
 
-    if (existingUser && existingUser.active && existingUser.role !== null) {
-      throw new AppError("ALREADY_EXISTS", 409, "Your account is already active and approved.");
-    }
+    // Check if user already exists in users table by clerkUserId OR email:
+    const [existingUser] = await tx
+      .select({ id: users.id, role: users.role, active: users.active, clerkUserId: users.clerkUserId })
+      .from(users)
+      .where(or(eq(users.clerkUserId, clerkUserId), eq(users.email, normalizedEmail)))
+      .limit(1);
 
     // If requesting hospital_admin for an existing facility, verify no active admin currently exists
     if (data.requestedRole === "hospital_admin" && data.facilityId) {
@@ -89,7 +89,8 @@ export async function submitOnboardingRequest(
           and(
             eq(users.facilityId, data.facilityId),
             eq(users.role, "hospital_admin"),
-            eq(users.active, true)
+            eq(users.active, true),
+            existingUser ? ne(users.id, existingUser.id) : sql`TRUE`
           )
         )
         .limit(1);
@@ -102,13 +103,16 @@ export async function submitOnboardingRequest(
       }
     }
 
-    // Check if there is already a pending request for this Clerk user
+    // Check if there is already a pending request for this Clerk user OR email
     const [existingRequest] = await tx
       .select({ id: onboardingRequests.id })
       .from(onboardingRequests)
       .where(
         and(
-          eq(onboardingRequests.clerkUserId, clerkUserId),
+          or(
+            eq(onboardingRequests.clerkUserId, clerkUserId),
+            eq(onboardingRequests.email, normalizedEmail)
+          ),
           eq(onboardingRequests.status, "PENDING_REVIEW")
         )
       )
@@ -121,9 +125,10 @@ export async function submitOnboardingRequest(
       await tx
         .update(onboardingRequests)
         .set({
-          fullName: data.fullName,
-          email: data.email,
-          phoneE164: data.phoneE164 || null,
+          clerkUserId,
+          fullName,
+          email: normalizedEmail,
+          phoneE164,
           requestedRole: data.requestedRole,
           facilityId: data.facilityId || null,
           facilityName: data.facilityName || null,
@@ -142,9 +147,9 @@ export async function submitOnboardingRequest(
         .insert(onboardingRequests)
         .values({
           clerkUserId,
-          fullName: data.fullName,
-          email: data.email,
-          phoneE164: data.phoneE164 || null,
+          fullName,
+          email: normalizedEmail,
+          phoneE164,
           requestedRole: data.requestedRole,
           facilityId: data.facilityId || null,
           facilityName: data.facilityName || null,
@@ -166,12 +171,14 @@ export async function submitOnboardingRequest(
       await tx
         .update(users)
         .set({
-          fullName: data.fullName,
-          email: data.email,
-          phoneE164: data.phoneE164 || null,
+          clerkUserId,
+          fullName,
+          email: normalizedEmail,
+          phoneE164,
           role: null,
           facilityId: null,
           active: false,
+          receivesPickupOtp: false,
         })
         .where(eq(users.id, existingUser.id));
     } else {
@@ -179,16 +186,16 @@ export async function submitOnboardingRequest(
         .insert(users)
         .values({
           clerkUserId,
-          fullName: data.fullName,
-          email: data.email,
-          phoneE164: data.phoneE164 || null,
+          fullName,
+          email: normalizedEmail,
+          phoneE164,
           phoneVerified: false,
           role: null,
           facilityId: null,
           active: false,
           receivesPickupOtp: false,
         })
-        .onConflictDoNothing({ target: users.clerkUserId });
+        .onConflictDoNothing();
     }
 
     await writeAudit(tx, {
@@ -261,7 +268,7 @@ export async function provisionUserDirectly(raw: unknown, requestId?: string) {
     const [existing] = await tx
       .select({ id: users.id })
       .from(users)
-      .where(eq(users.clerkUserId, data.clerkUserId))
+      .where(or(eq(users.clerkUserId, data.clerkUserId), eq(users.email, data.email)))
       .limit(1);
 
     let userId: string;
@@ -458,7 +465,7 @@ export async function approveOnboardingRequest(onboardingId: string, requestId?:
     const [existingUser] = await tx
       .select({ id: users.id })
       .from(users)
-      .where(eq(users.clerkUserId, req.clerkUserId))
+      .where(or(eq(users.clerkUserId, req.clerkUserId), eq(users.email, req.email)))
       .limit(1);
 
     let assignedUserId: string;
