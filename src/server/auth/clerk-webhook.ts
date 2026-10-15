@@ -42,6 +42,7 @@ export function verifyClerkWebhook(
 export interface ClerkUserEvent {
   type: "user.created" | "user.updated" | "user.deleted";
   clerkUserId: string;
+  fullName?: string | null;
   email: string | null;
   phoneE164: string | null;
   phoneVerified: boolean;
@@ -49,6 +50,8 @@ export interface ClerkUserEvent {
 
 type RawUser = {
   id?: string;
+  first_name?: string | null;
+  last_name?: string | null;
   primary_email_address_id?: string | null;
   email_addresses?: { id: string; email_address: string }[];
   primary_phone_number_id?: string | null;
@@ -70,9 +73,12 @@ export function parseClerkUserEvent(body: string): ClerkUserEvent | null {
   const email =
     d.email_addresses?.find((e) => e.id === d.primary_email_address_id)?.email_address ?? null;
   const phone = d.phone_numbers?.find((p) => p.id === d.primary_phone_number_id) ?? null;
+  const nameParts = [d.first_name, d.last_name].filter(Boolean);
+  const fullName = nameParts.length ? nameParts.join(" ") : null;
   return {
     type: evt.type,
     clerkUserId: d.id,
+    ...(fullName ? { fullName } : {}),
     email,
     phoneE164: phone?.phone_number ?? null,
     phoneVerified: phone?.verification?.status === "verified",

@@ -68,23 +68,8 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
   const { userId } = await auth();
   if (!userId) return null;
 
-  // 2. Direct database mapping for this Clerk user ID:
-  const directUser = await findByClerkId(userId);
-  if (directUser) return directUser;
-
-  // 3. In development, if a role persona was selected after Clerk authentication:
-  if (process.env.NODE_ENV === "development") {
-    const session = await getDevSession();
-    if (session) {
-      if (TEST_IDENTITY.test(session.username)) {
-        const u = await findByClerkId(session.username);
-        return u && u.role === session.role ? u : null;
-      }
-      return findByClerkId(`dev_${session.role}`);
-    }
-  }
-
-  return null;
+  // 2. Strict individual mapping: every user must have their own unique SafeWaste database profile:
+  return await findByClerkId(userId);
 });
 
 /** The active authentication identifier (Clerk user ID or dev username), even before a `users` row exists. */

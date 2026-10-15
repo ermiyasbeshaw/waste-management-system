@@ -57,6 +57,13 @@
       "when": 1791722268923,
       "tag": "0007_gate8_medicine_stock",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792060793721,
+      "tag": "0008_narrow_captain_midlands",
+      "breakpoints": true
     }
   ]
 }

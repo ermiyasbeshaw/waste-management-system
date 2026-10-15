@@ -1,5 +1,5 @@
 import "server-only";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import {
   facilitySchema,
   facilityStatusSchema,
@@ -146,6 +146,27 @@ export async function updateUserAccess(userId: string, raw: unknown, requestId?:
         });
       facilityId = f.id;
     }
+    if (input.role === "hospital_admin" && input.active && facilityId) {
+      const [existingAdmin] = await tx
+        .select({ id: users.id })
+        .from(users)
+        .where(
+          and(
+            eq(users.facilityId, facilityId),
+            eq(users.role, "hospital_admin"),
+            eq(users.active, true),
+            ne(users.id, before.id)
+          )
+        )
+        .limit(1);
+      if (existingAdmin) {
+        throw new AppError(
+          "HOSPITAL_ADMIN_EXISTS",
+          409,
+          "This hospital already has an active Hospital Administrator."
+        );
+      }
+    }
     const values = {
       role: input.role,
       facilityId,
@@ -188,6 +209,27 @@ export async function updateHospitalUser(userId: string, raw: unknown, requestId
     }
     if (before.id === admin.id && !parsed.data.active) {
       throw new AppError("FORBIDDEN", 403, "You cannot deactivate your own account.");
+    }
+    if (before.role === "hospital_admin" && parsed.data.active && admin.facilityId) {
+      const [existingAdmin] = await tx
+        .select({ id: users.id })
+        .from(users)
+        .where(
+          and(
+            eq(users.facilityId, admin.facilityId),
+            eq(users.role, "hospital_admin"),
+            eq(users.active, true),
+            ne(users.id, before.id)
+          )
+        )
+        .limit(1);
+      if (existingAdmin) {
+        throw new AppError(
+          "HOSPITAL_ADMIN_EXISTS",
+          409,
+          "This hospital already has an active Hospital Administrator."
+        );
+      }
     }
     await tx.update(users).set(parsed.data).where(eq(users.id, before.id)).catch(friendlyDbError);
     await writeAudit(tx, {

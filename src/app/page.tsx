@@ -15,7 +15,8 @@ export default async function RootPage() {
 
   const authId = await getAuthUserId();
   if (authId) {
-    if (process.env.NODE_ENV === "development") {
+    const devBypass = await isDevBypassRequest();
+    if (devBypass) {
       redirect("/dev-login");
     }
     redirect("/pending");

@@ -78,6 +78,7 @@ export const licenseSubject = pgEnum("license_subject", ["VEHICLE", "DRIVER", "F
 export const MOH_COLOURS = ["YELLOW", "RED", "BLUE", "BROWN", "BLACK", "WHITE"] as const;
 
 export type UserRoleValue = (typeof userRole.enumValues)[number];
+export type FacilityTypeValue = (typeof facilityType.enumValues)[number];
 
 /** Roles that must belong to a facility (DECISION v1.2 addendum: disposal_operator → the DISPOSAL_SITE). */
 export const FACILITY_ROLES = ["hospital_admin", "hospital_staff", "disposal_operator"] as const;

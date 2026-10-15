@@ -60,6 +60,9 @@ export const users = pgTable(
     ),
     check("users_email_lowercase", sql`${t.email} = lower(${t.email})`),
     uniqueIndex("users_email_unique").on(t.email),
+    uniqueIndex("users_one_active_hospital_admin_idx")
+      .on(t.facilityId)
+      .where(sql`${t.role} = 'hospital_admin' AND ${t.active} = true`),
     index("users_facility_role_idx").on(t.facilityId, t.role),
   ]
 );

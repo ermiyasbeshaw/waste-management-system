@@ -11,3 +11,4 @@ export * from "./disposal";
 export * from "./billing";
 export * from "./platform";
 export * from "./medicine";
+export * from "./onboarding";
