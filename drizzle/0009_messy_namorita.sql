@@ -1,0 +1,1 @@
+ALTER TABLE "medicine_disposal_requests" ADD COLUMN "scheduled_date" date;

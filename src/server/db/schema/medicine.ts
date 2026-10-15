@@ -100,6 +100,7 @@ export const medicineDisposalRequests = pgTable(
     note: text("note"),
     containerCount: integer("container_count").notNull(),
     weightKg: numeric("weight_kg", { precision: 10, scale: 2 }).notNull(),
+    scheduledDate: date("scheduled_date"),
     decidedBy: uuid("decided_by").references(() => users.id, { onDelete: "restrict" }),
     decidedAt: tsz("decided_at"),
     decisionReason: text("decision_reason"),

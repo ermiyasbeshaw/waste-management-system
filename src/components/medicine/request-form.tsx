@@ -12,8 +12,10 @@ import type { StockRow } from "@/types/view-models";
  */
 export function RequestForm({ stock }: { stock: StockRow[] }) {
   const [chosen, setChosen] = useState<Record<string, string>>({});
+  const today = new Date().toISOString().split("T")[0];
   const [containers, setContainers] = useState("1");
   const [weight, setWeight] = useState("");
+  const [scheduledDate, setScheduledDate] = useState(today);
   const [note, setNote] = useState("");
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, start] = useTransition();
@@ -23,7 +25,7 @@ export function RequestForm({ stock }: { stock: StockRow[] }) {
   const submit = () =>
     start(async () => {
       const r = await createDisposalRequestAction(
-        { lines, containerCount: containers, weightKg: weight, note },
+        { lines, containerCount: containers, weightKg: weight, scheduledDate, note },
         key.current
       );
       if (r.ok) {
@@ -33,6 +35,7 @@ export function RequestForm({ stock }: { stock: StockRow[] }) {
         });
         setChosen({});
         setWeight("");
+        setScheduledDate(today);
         setNote("");
         key.current = crypto.randomUUID();
       } else {
@@ -112,7 +115,7 @@ export function RequestForm({ stock }: { stock: StockRow[] }) {
           </tbody>
         </table>
       </div>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
         <label className="text-xs text-zinc-400 space-y-1">
           <span className="block">Containers it will fill</span>
           <input
@@ -129,6 +132,15 @@ export function RequestForm({ stock }: { stock: StockRow[] }) {
             inputMode="decimal"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
+            className={inputClass}
+          />
+        </label>
+        <label className="text-xs text-zinc-400 space-y-1">
+          <span className="block">Proposed Date / Schedule</span>
+          <input
+            type="date"
+            value={scheduledDate}
+            onChange={(e) => setScheduledDate(e.target.value)}
             className={inputClass}
           />
         </label>

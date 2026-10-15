@@ -44,6 +44,7 @@ export interface DisposalRequestRow {
   createdAt: string;
   containerCount: number;
   weightKg: number;
+  scheduledDate: string | null;
   note: string | null;
   decisionReason: string | null;
   decidedAt: string | null;

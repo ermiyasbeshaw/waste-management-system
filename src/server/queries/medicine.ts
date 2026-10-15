@@ -181,6 +181,7 @@ export const getDisposalRequests = cache(
       created_at: Date;
       container_count: number;
       weight_kg: string;
+      scheduled_date: string | null;
       note: string | null;
       decision_reason: string | null;
       decided_at: Date | null;
@@ -188,8 +189,9 @@ export const getDisposalRequests = cache(
       lines: DisposalRequestRow["lines"] | null;
     }>(sql`
       SELECT r.id, r.request_code, f.id AS facility_id, f.code AS facility_code, f.name AS facility_name, r.status,
-             u.full_name AS requested_by, r.created_at, r.container_count, r.weight_kg, r.note, r.decision_reason,
-             r.decided_at, w.waste_code,
+             u.full_name AS requested_by, r.created_at, r.container_count, r.weight_kg,
+             to_char(r.scheduled_date, 'YYYY-MM-DD') AS scheduled_date,
+             r.note, r.decision_reason, r.decided_at, w.waste_code,
              (SELECT json_agg(json_build_object('item', l.item, 'strength', l.strength, 'form', l.form, 'batch', l.batch,
                      'quantity', l.quantity, 'unit', l.unit, 'expiryDate', to_char(l.expiry_date, 'YYYY-MM-DD'))
                      ORDER BY l.item)
@@ -210,6 +212,7 @@ export const getDisposalRequests = cache(
       createdAt: new Date(r.created_at).toISOString(),
       containerCount: num(r.container_count),
       weightKg: Number(r.weight_kg),
+      scheduledDate: r.scheduled_date ?? null,
       note: r.note,
       decisionReason: r.decision_reason,
       decidedAt: r.decided_at ? new Date(r.decided_at).toISOString() : null,

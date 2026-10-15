@@ -111,7 +111,8 @@ export function RequestsList({
                 </p>
                 <p className="text-xs text-zinc-400">
                   {showFacility ? `${r.facility.name} · ` : ""}
-                  requested by {r.requestedBy} · {formatDateTime(r.createdAt)} · {r.containerCount}{" "}
+                  requested by {r.requestedBy} · {formatDateTime(r.createdAt)}
+                  {r.scheduledDate ? ` · Schedule: ${r.scheduledDate}` : ""} · {r.containerCount}{" "}
                   container(s), {r.weightKg} kg
                 </p>
                 {r.note && <p className="text-xs text-zinc-400">Note: {r.note}</p>}

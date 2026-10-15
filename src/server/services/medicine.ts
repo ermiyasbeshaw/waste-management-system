@@ -453,9 +453,9 @@ export async function createDisposalRequest(
         const requestCode = await nextCode(tx, "medicine_request");
         const req = (await one<{ id: string }>(
           tx,
-          sql`INSERT INTO medicine_disposal_requests (request_code, facility_id, requested_by, note, container_count, weight_kg)
+          sql`INSERT INTO medicine_disposal_requests (request_code, facility_id, requested_by, note, container_count, weight_kg, scheduled_date)
               VALUES (${requestCode}, ${user.facilityId}, ${user.id}, ${input.note}, ${input.containerCount},
-                      ${input.weightKg.toFixed(2)})
+                      ${input.weightKg.toFixed(2)}, ${input.scheduledDate ? sql`${input.scheduledDate}::date` : null})
               RETURNING id`
         ))!;
         for (const l of input.lines) {
@@ -478,6 +478,7 @@ export async function createDisposalRequest(
             lines: input.lines.length,
             containerCount: input.containerCount,
             weightKg: input.weightKg,
+            scheduledDate: input.scheduledDate,
           },
           requestId: meta.requestId,
         });

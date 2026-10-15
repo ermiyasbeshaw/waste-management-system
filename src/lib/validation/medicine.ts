@@ -38,6 +38,12 @@ export const disposalRequestSchema = z.object({
     .max(500, "At most 500 characters")
     .optional()
     .transform((v) => (v && v.trim() ? v.trim() : null)),
+  scheduledDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Choose a valid date (YYYY-MM-DD)")
+    .optional()
+    .nullable()
+    .transform((v) => (v && v.trim() ? v.trim() : null)),
 });
 export type DisposalRequestInput = z.infer<typeof disposalRequestSchema>;
 
