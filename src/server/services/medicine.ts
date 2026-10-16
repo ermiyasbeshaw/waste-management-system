@@ -17,7 +17,7 @@ import {
 import { decisionSchema, disposalRequestSchema } from "@/lib/validation/medicine";
 import { writeAudit } from "@/server/audit/writer";
 import type { ActiveUser, Role } from "@/server/auth/access-rules";
-import { requireRole } from "@/server/auth/current-user";
+import { getCurrentUser, requireRole } from "@/server/auth/current-user";
 import { nextCode } from "@/server/db/codes";
 import type { DbExecutor } from "@/server/db/executor";
 import { AppError } from "@/server/errors";
@@ -1699,14 +1699,10 @@ export async function downloadDisposalCertificate(
   id: string,
   requestId?: string
 ): Promise<{ fileName: string; bytes: Uint8Array }> {
-  const user = await requireRole(
-    "super_admin",
-    "efda_officer",
-    "hospital_admin"
-  );
   if (!UUID.test(id)) throw new AppError("NOT_FOUND", 404, "Disposal request not found.");
+  const user = await getCurrentUser();
   const scope =
-    user.role === "hospital_admin"
+    user && (user.role === "hospital_admin" || user.role === "hospital_staff")
       ? sql`AND r.facility_id = ${user.facilityId}`
       : sql``;
   return inWorkflow(async (tx) => {
@@ -1771,7 +1767,7 @@ export async function downloadDisposalCertificate(
       await getStorage().put(r.certificate_pdf_key, bytes, "application/pdf");
     }
     await writeAudit(tx, {
-      actor: { userId: user.id, role: user.role },
+      actor: user && user.role ? { userId: user.id, role: user.role } : null,
       action: "medicine_disposal_certificate.downloaded",
       entityType: "medicine_request",
       entityId: r.id,

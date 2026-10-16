@@ -19,7 +19,7 @@ export async function GET(
     return new Response(bytes.slice().buffer, {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Content-Disposition": `inline; filename="${fileName}"`,
         "Cache-Control": "private, no-store",
         "X-Request-Id": requestId,
       },
