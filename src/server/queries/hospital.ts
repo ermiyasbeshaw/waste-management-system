@@ -154,9 +154,10 @@ export const getHospitalWastePage = cache(
   }
 );
 
-/** Certificates for the facility's waste, newest number first. */
+/** Certificates for the facility's waste, newest number first (hospital_admin only). */
 export const getHospitalCertificatesPage = cache(
   async (cursor: string | null, limit = PAGE_SIZE): Promise<Page<CertificateRow>> => {
+    await requireRole("hospital_admin");
     const facilityId = await ownFacility();
     const size = pageSize(limit);
     const after = cursor ? sql`cert.certificate_no < ${cursor}` : sql`TRUE`;

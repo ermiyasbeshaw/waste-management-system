@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { requireRole } from "@/server/auth/current-user";
 import { parseHospitalCursor } from "@/server/queries/hospital";
 import { WidgetSkeleton } from "@/components/shared/skeleton";
 import { ExportLinks } from "@/components/shared/export-links";
@@ -6,8 +7,9 @@ import { CertificatesListWidget } from "@/components/hospital/widgets";
 
 type Props = { searchParams?: Record<string, string | string[] | undefined> };
 
-/** /hospital/certificates — Certificates of Disposal of the facility, 50 per page. */
+/** /hospital/certificates — Certificates of Disposal of the facility (hospital_admin only). */
 export default async function HospitalCertificatesPage(props: Props) {
+  await requireRole("hospital_admin");
   const searchParams = await props.searchParams;
   const cursor = parseHospitalCursor(searchParams?.after);
   return (

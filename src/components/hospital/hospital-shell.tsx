@@ -63,11 +63,11 @@ export function HospitalShell({
         tabs={[
           { href: "/hospital", label: "Facility Overview" },
           { href: "/hospital/waste", label: "Waste Records" },
-          { href: "/hospital/certificates", label: "Destruction Certificates" },
           { href: "/hospital/stock", label: "Medicine Stock" },
           { href: "/hospital/stock/requests", label: "Disposal Requests" },
           ...(canSeeInvoices
             ? [
+                { href: "/hospital/certificates", label: "Destruction Certificates" },
                 { href: "/hospital/invoices", label: "Billing & Invoices" },
                 { href: "/hospital/users", label: "Users & Pickup Codes" },
               ]

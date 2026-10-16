@@ -1465,11 +1465,11 @@ export async function markDisposalComplete(idOrCode: string, requestId?: string)
           WHERE id = ${req.id}`
     );
 
-    // Send email notification with certificate details to Hospital Admin, Staff, EFDA, Super Admin
+    // Send email notification with certificate details to Super Admin, Hospital Admin, and EFDA users only
     const recipients = await all<{ email: string }>(
       tx,
       sql`SELECT DISTINCT email FROM users WHERE (
-            (facility_id = ${req.facility_id} AND role IN ('hospital_admin', 'hospital_staff'))
+            (facility_id = ${req.facility_id} AND role = 'hospital_admin')
             OR role IN ('efda_officer', 'super_admin')
           ) AND active AND email IS NOT NULL LIMIT 50`
     );
@@ -1702,13 +1702,11 @@ export async function downloadDisposalCertificate(
   const user = await requireRole(
     "super_admin",
     "efda_officer",
-    "hospital_admin",
-    "hospital_staff",
-    "disposal_operator"
+    "hospital_admin"
   );
   if (!UUID.test(id)) throw new AppError("NOT_FOUND", 404, "Disposal request not found.");
   const scope =
-    user.role === "hospital_admin" || user.role === "hospital_staff"
+    user.role === "hospital_admin"
       ? sql`AND r.facility_id = ${user.facilityId}`
       : sql``;
   return inWorkflow(async (tx) => {

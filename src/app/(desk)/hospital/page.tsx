@@ -63,9 +63,11 @@ export default async function HospitalOverviewPage() {
       <Suspense fallback={<WidgetSkeleton height="h-80" label="recent waste" />}>
         <RecentWasteWidget />
       </Suspense>
-      <Suspense fallback={<WidgetSkeleton height="h-80" label="certificates" />}>
-        <LatestCertificatesWidget />
-      </Suspense>
+      {user.role === "hospital_admin" && (
+        <Suspense fallback={<WidgetSkeleton height="h-80" label="certificates" />}>
+          <LatestCertificatesWidget />
+        </Suspense>
+      )}
       {user.role === "hospital_admin" && (
         <Suspense fallback={<WidgetSkeleton height="h-80" label="outstanding invoices" />}>
           <OutstandingInvoicesWidget />

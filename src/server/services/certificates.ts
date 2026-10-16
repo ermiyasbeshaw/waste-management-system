@@ -173,8 +173,10 @@ export async function generateCertificate(
 
       const recipients = await all<{ email: string }>(
         tx,
-        sql`SELECT email FROM users WHERE facility_id = ${c.facility_id} AND role = 'hospital_admin'
-              AND active AND email IS NOT NULL LIMIT 20`
+        sql`SELECT DISTINCT email FROM users WHERE (
+              (facility_id = ${c.facility_id} AND role = 'hospital_admin')
+              OR role IN ('super_admin', 'efda_officer')
+            ) AND active AND email IS NOT NULL LIMIT 50`
       );
       for (const r of recipients) {
         await enqueueMessage(tx, {
