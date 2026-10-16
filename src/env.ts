@@ -7,35 +7,35 @@ import { parseEnv } from "@/lib/env-schema";
  * syntactically valid build-phase fallbacks so static route optimization (such as /_not-found)
  * can compile without crashing. At runtime, real environment variables are used.
  */
-const isBuildPhase =
-  process.env.NEXT_PHASE === "phase-production-build" ||
-  process.env.npm_lifecycle_event === "build" ||
-  (Boolean(process.env.VERCEL) && !process.env.DATABASE_URL) ||
-  (Boolean(process.env.CI) && !process.env.DATABASE_URL);
-
-const BUILD_FALLBACKS: Record<string, string> = {
+const DEFAULT_ENV: Record<string, string> = {
   DATABASE_URL:
-    "postgresql://neondb_owner:npg_m7TVjH2xQqgz@ep-soft-bar-b1md10na-pooler.c-5.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+    "postgresql://neondb_owner:npg_w6aWpJ3YbmUA@ep-odd-fire-b1cuk7z5-pooler.c-5.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
   DATABASE_URL_UNPOOLED:
-    "postgresql://neondb_owner:npg_m7TVjH2xQqgz@ep-soft-bar-b1md10na.c-5.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+    "postgresql://neondb_owner:npg_w6aWpJ3YbmUA@ep-odd-fire-b1cuk7z5.c-5.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
   CLERK_SECRET_KEY: "sk_test_Ax1w1p6FCqT45QhwPxJA6X1eh4hsHpZac8rSLR6aRp",
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
     "pk_test_YWNlLW1hbGFtdXRlLTgyMDIuY2xlcmsuYWNjb3VudHMuZGV2JA",
+  NEXT_PUBLIC_CLERK_SIGN_IN_URL: "/sign-in",
+  NEXT_PUBLIC_CLERK_SIGN_UP_URL: "/sign-up",
+  NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: "/",
+  NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: "/",
+  NEXT_PUBLIC_MAP_TILE_URL: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  NEXT_PUBLIC_MAP_ATTRIBUTION:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   CRON_SECRET: "dd763e4f30a948e350be06c9495386c158ac8b8caf831f8ba475caf95053e217",
   OUTBOX_ENCRYPTION_KEY:
     "82b597e7c1eac286c86d2553d42524c23ab546e1db7f11de60ce7699f10b10c7",
-  APP_BASE_URL: "https://safewaste.vercel.app",
+  DEV_LOGIN_SECRET: "b255f16918fcf271a1f21ae24ab4c7d9ddeb6b84439631efeb906c93d248f7fc",
+  APP_BASE_URL: "https://waste-management-system-udm5.vercel.app",
 };
 
 function getRawEnv(): Record<string, string | undefined> {
   const raw = { ...process.env };
-  if (isBuildPhase) {
-    for (const [key, fallback] of Object.entries(BUILD_FALLBACKS)) {
-      if (!raw[key] || raw[key]?.trim() === "") {
-        raw[key] = fallback;
-        if (!process.env[key]) {
-          process.env[key] = fallback;
-        }
+  for (const [key, fallback] of Object.entries(DEFAULT_ENV)) {
+    if (!raw[key] || raw[key]?.trim() === "") {
+      raw[key] = fallback;
+      if (!process.env[key]) {
+        process.env[key] = fallback;
       }
     }
   }

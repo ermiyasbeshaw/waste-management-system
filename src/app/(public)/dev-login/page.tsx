@@ -6,12 +6,14 @@ import { HOME_BY_ROLE } from "@/server/auth/access-rules";
 import { DevLoginForm } from "@/components/dev/dev-login-form";
 import { AccountMenu } from "@/server/auth/clerk-ui";
 
+import { env } from "@/env";
+
 /**
  * /dev-login — development role workstation login (one username + password per role).
  * Requires Clerk authentication FIRST: unauthenticated visitors are redirected to /sign-in.
  */
 export default async function DevLoginPage() {
-  if (process.env.NODE_ENV !== "development") {
+  if (!env.DEV_LOGIN_SECRET) {
     redirect("/sign-in");
   }
 

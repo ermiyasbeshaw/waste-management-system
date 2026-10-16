@@ -34,7 +34,7 @@ export async function isDevBypassRequest(): Promise<boolean> {
 
 /** The verified development test-login session of this request, if any. */
 export async function getDevSession(): Promise<DevSession | null> {
-  if (process.env.NODE_ENV !== "development" || !env.DEV_LOGIN_SECRET) return null;
+  if (!env.DEV_LOGIN_SECRET) return null;
   return verifyDevSessionToken(
     (await cookies()).get(DEV_SESSION_COOKIE)?.value,
     env.DEV_LOGIN_SECRET,
@@ -68,6 +68,13 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
   const { userId } = await auth();
   if (!userId) return null;
 
+  // Check if a dev role session is active (e.g. chosen from /dev-login for workstation testing):
+  const devSession = await getDevSession();
+  if (devSession) {
+    const devUser = await findByClerkId(`dev_${devSession.role}`);
+    if (devUser) return devUser;
+  }
+
   // 2. Strict individual mapping: every user must have their own unique SafeWaste database profile:
   return await findByClerkId(userId);
 });
@@ -78,6 +85,10 @@ export const getAuthUserId = cache(async (): Promise<string | null> => {
     const session = await getDevSession();
     if (!session) return null;
     return TEST_IDENTITY.test(session.username) ? session.username : `dev_${session.role}`;
+  }
+  const devSession = await getDevSession();
+  if (devSession) {
+    return `dev_${devSession.role}`;
   }
   const { userId } = await auth();
   return userId ?? null;

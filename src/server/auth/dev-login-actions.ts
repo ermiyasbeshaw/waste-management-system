@@ -33,11 +33,10 @@ const MAX_FAILURES = 5;
 const LOCK_MS = 60_000;
 
 export async function devLogin(_prev: DevLoginState, formData: FormData): Promise<DevLoginState> {
-  const isDev = process.env.NODE_ENV === "development";
   const { userId } = await auth();
   const bypass = await isDevBypassRequest();
 
-  if (!isDev || (!bypass && !userId) || !env.DEV_LOGIN_SECRET) {
+  if ((!bypass && !userId) || !env.DEV_LOGIN_SECRET) {
     return { error: "Please sign in with Clerk first." };
   }
   const parsed = loginInput.safeParse({

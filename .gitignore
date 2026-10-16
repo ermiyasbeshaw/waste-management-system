@@ -3,6 +3,7 @@
 .env*.local
 .env.*
 !.env.example
+!.env.production
 
 # Build output and dependencies
 node_modules/
