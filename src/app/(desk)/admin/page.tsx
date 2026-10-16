@@ -1,9 +1,18 @@
 import { Suspense } from "react";
 import { WidgetSkeleton } from "@/components/shared/skeleton";
 import { CategoryVolumeWidget, FleetMapWidget, TripsTodayWidget } from "@/components/admin/widgets";
+import { ApprovedDisposalsWidget } from "@/components/admin/approved-disposals-widget";
+import { getDisposalRequests } from "@/server/queries/medicine";
+import { getAvailableDrivers, getAvailableVehicles } from "@/server/services/medicine";
 
-/** /admin — Overview: trips in progress, 30-day category volume, today's trips. */
-export default function AdminOverviewPage() {
+/** /admin — Overview: trips in progress, approved disposal requests tracking, 30-day category volume, today's trips. */
+export default async function AdminOverviewPage() {
+  const [requests, drivers, vehicles] = await Promise.all([
+    getDisposalRequests(),
+    getAvailableDrivers().catch(() => []),
+    getAvailableVehicles().catch(() => []),
+  ]);
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -23,6 +32,9 @@ export default function AdminOverviewPage() {
           <CategoryVolumeWidget />
         </Suspense>
       </div>
+
+      {/* Approved Medical Waste Disposal Workflow Tracking & Driver Assignment */}
+      <ApprovedDisposalsWidget rows={requests} drivers={drivers} vehicles={vehicles} />
 
       <Suspense fallback={<WidgetSkeleton height="h-80" label="today's trips" />}>
         <TripsTodayWidget />

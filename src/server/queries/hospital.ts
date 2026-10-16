@@ -242,20 +242,20 @@ export const getHospitalOutstanding = cache(
  */
 export const getHospitalCategories = cache(async (): Promise<CategoryRef[]> => {
   await ownFacility();
-  const excluded = sql.join(
-    EFDA_APPROVAL_CATEGORIES.map((c) => sql`${c}`),
-    sql`, `
-  );
-  const result = await rows<{ code: string; name: string; colour_code: MohColor }>(sql`
-    SELECT code, name, colour_code FROM waste_categories
-    WHERE active AND code NOT IN (${excluded})
-    ORDER BY name LIMIT 100`);
-  return result.map((c) => ({
-    code: c.code,
-    name: c.name,
-    colourCode: c.colour_code,
-    colourHex: MOH_HEX[c.colour_code] ?? "#71717a",
-  }));
+  return [
+    {
+      code: "PHARMACEUTICAL",
+      name: "Expired Drugs",
+      colourCode: "BLUE" as MohColor,
+      colourHex: MOH_HEX["BLUE"] ?? "#3b82f6",
+    },
+    {
+      code: "GENERAL",
+      name: "Normal Drugs",
+      colourCode: "BLACK" as MohColor,
+      colourHex: MOH_HEX["BLACK"] ?? "#18181b",
+    },
+  ];
 });
 
 /** hospital_admin: the users of their own facility (identity from Clerk; phone masked). */

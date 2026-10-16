@@ -11,12 +11,7 @@ export default async function RegisterWastePage() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-zinc-300 bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
-        Expired or unwanted <b>medicines</b> are not registered here: they need EFDA approval first.
-        The Hospital Administrator requests it in{" "}
-        <Link href="/hospital/stock/requests" className="text-emerald-400 underline">
-          Medicine Stock → Disposal requests
-        </Link>
-        . Sharps, infectious and other waste are registered directly below.
+        Hospital Staff sends medical waste requests below. Select <b>Expired Drugs</b> (requires Hospital Admin approval followed by EFDA regulatory approval) or <b>Normal Drugs</b> (requires Hospital Admin approval, then Super Admin assigns a driver).
       </p>
       <RegisterWasteForm categories={categories} />
     </div>

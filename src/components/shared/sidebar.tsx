@@ -45,6 +45,7 @@ export function Sidebar() {
           { href: "/hospital/waste", label: "Waste Records", icon: Activity },
           { href: "/hospital/certificates", label: "Certificates", icon: FileCheck },
           { href: "/hospital/stock", label: "Medicine Stock", icon: Pill },
+          { href: "/hospital/stock/requests", label: "Disposal Requests", icon: ClipboardCheck },
           // Invoices: hospital_admin only (CLAUDE.md §3).
           ...(activeRole === "hospital_admin"
             ? [{ href: "/hospital/invoices", label: "Billing & Invoices", icon: CreditCard }]

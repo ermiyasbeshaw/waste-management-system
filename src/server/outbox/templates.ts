@@ -161,6 +161,66 @@ export const TEMPLATES = {
       html: `<p>SafeWaste test message: ${escapeHtml(d.note)}</p>`,
     }),
   }),
+  /** Notification to administrators when a driver scans medical waste QR code. */
+  "disposal.driver_scanned": template({
+    channel: "EMAIL",
+    data: z.object({
+      requestCode: z.string(),
+      facilityName: z.string(),
+      driverName: z.string(),
+      scannedAt: z.string(),
+    }),
+    secrets: [],
+    render: (d) => ({
+      channel: "EMAIL",
+      subject: `Waste Received by Driver — ${d.requestCode}`,
+      html: `<p>Medical waste for disposal request <b>${escapeHtml(d.requestCode)}</b> (${escapeHtml(d.facilityName)}) has been received and scanned by driver <b>${escapeHtml(d.driverName)}</b> on ${escapeHtml(d.scannedAt)}.</p><p>Check the SafeWaste administrator dashboard for live progress.</p>`,
+    }),
+  }),
+  /** Notification to EFDA officers when a disposal request contains expired medicine. */
+  "disposal.pending_efda_approval": template({
+    channel: "EMAIL",
+    data: z.object({
+      requestCode: z.string(),
+      containsExpired: z.boolean(),
+    }),
+    secrets: [],
+    render: (d) => ({
+      channel: "EMAIL",
+      subject: `Action Required: Disposal Request ${d.requestCode} Pending EFDA Approval`,
+      html: `<p>Disposal request <b>${escapeHtml(d.requestCode)}</b> contains expired medicine and requires regulatory approval from the EFDA before collection.</p><p>Please review and approve or reject this request in the EFDA regulatory portal.</p>`,
+    }),
+  }),
+  /** Notification to Super Admin when a request is ready for driver assignment. */
+  "disposal.pending_driver_assignment": template({
+    channel: "EMAIL",
+    data: z.object({
+      requestCode: z.string(),
+      containsExpired: z.boolean(),
+      efdaApproved: z.boolean().optional(),
+    }),
+    secrets: [],
+    render: (d) => ({
+      channel: "EMAIL",
+      subject: `Ready for Driver Assignment: Request ${d.requestCode}`,
+      html: `<p>Disposal request <b>${escapeHtml(d.requestCode)}</b> has received all required approvals and is waiting for a driver to be assigned.</p><p>Please assign an active driver on the Super Admin overview dashboard.</p>`,
+    }),
+  }),
+  /** Notification when a driver is assigned to a request. */
+  "disposal.driver_assigned": template({
+    channel: "EMAIL",
+    data: z.object({
+      requestCode: z.string(),
+      facilityName: z.string(),
+      driverName: z.string(),
+    }),
+    secrets: [],
+    render: (d) => ({
+      channel: "EMAIL",
+      subject: `Driver Assigned — ${d.requestCode}`,
+      html: `<p>Driver <b>${escapeHtml(d.driverName)}</b> has been assigned to collect medical waste for disposal request <b>${escapeHtml(d.requestCode)}</b> from <b>${escapeHtml(d.facilityName)}</b>.</p>`,
+    }),
+  }),
 } as const;
 
 export type TemplateName = keyof typeof TEMPLATES;

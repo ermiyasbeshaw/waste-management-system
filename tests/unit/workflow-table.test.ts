@@ -61,7 +61,17 @@ const EXPECTED: Record<Exclude<Entity, "facility" | "vehicle" | "driver">, strin
   ],
   invoice: ["DRAFT>ISSUED", "ISSUED>SETTLED_OFFLINE", "DRAFT>CANCELLED", "ISSUED>CANCELLED"],
   contract: ["ACTIVE>EXPIRING_SOON", "EXPIRING_SOON>EXPIRED", "ACTIVE>EXPIRED"],
-  medicine_request: ["PENDING_APPROVAL>APPROVED", "PENDING_APPROVAL>REJECTED"],
+  medicine_request: [
+    "PENDING_APPROVAL>PENDING_EFDA_APPROVAL",
+    "PENDING_APPROVAL>PENDING_DRIVER_ASSIGNMENT",
+    "PENDING_APPROVAL>REJECTED",
+    "PENDING_EFDA_APPROVAL>PENDING_DRIVER_ASSIGNMENT",
+    "PENDING_EFDA_APPROVAL>REJECTED",
+    "PENDING_DRIVER_ASSIGNMENT>APPROVED",
+    "APPROVED>RECEIVED_BY_DRIVER",
+    "RECEIVED_BY_DRIVER>RECEIVED_AT_FACILITY",
+    "RECEIVED_AT_FACILITY>DISPOSED",
+  ],
 };
 
 function user(role: Role, facilityId: string | null = null): ActiveUser {
@@ -138,39 +148,39 @@ describe("transition table (CLAUDE.md §5)", () => {
         expect(rule.who, entity).not.toContain("efda_officer");
       }
     }
-    for (const rule of TRANSITIONS.medicine_request) expect(rule.who).toEqual(["efda_officer"]);
+    const efdaRules = TRANSITIONS.medicine_request.filter((r) => r.who.includes("efda_officer"));
+    expect(efdaRules.length).toBeGreaterThan(0);
   });
 });
 
 describe("checkTransition", () => {
-  it("medicine requests: only efda_officer approves or rejects; rejecting needs a reason", () => {
+  it("medicine requests: hospital admin approves or rejects; rejecting needs a reason", () => {
     const base = { entity: "medicine_request" as const, from: "PENDING_APPROVAL" as const };
-    expect(checkTransition({ ...base, to: "APPROVED", actor: user("efda_officer") }).to).toBe(
-      "APPROVED"
-    );
+    expect(
+      checkTransition({ ...base, to: "PENDING_DRIVER_ASSIGNMENT", actor: user("hospital_admin", "f1") }).to
+    ).toBe("PENDING_DRIVER_ASSIGNMENT");
     for (const role of [
       "super_admin",
-      "hospital_admin",
       "hospital_staff",
       "driver",
       "disposal_operator",
     ] as const) {
       expect(
-        errorOf(() => checkTransition({ ...base, to: "APPROVED", actor: user(role, "f1") }))
+        errorOf(() => checkTransition({ ...base, to: "PENDING_DRIVER_ASSIGNMENT", actor: user(role, "f1") }))
           .httpStatus,
         role
       ).toBe(403);
     }
     expect(
-      errorOf(() => checkTransition({ ...base, to: "REJECTED", actor: user("efda_officer") }))
+      errorOf(() => checkTransition({ ...base, to: "REJECTED", actor: user("hospital_admin", "f1") }))
         .httpStatus
     ).toBe(422);
     expect(
       checkTransition({
         ...base,
         to: "REJECTED",
-        actor: user("efda_officer"),
-        reason: "Not expired",
+        actor: user("hospital_admin", "f1"),
+        reason: "Invalid quantity",
       }).to
     ).toBe("REJECTED");
     expect(
@@ -179,7 +189,7 @@ describe("checkTransition", () => {
           entity: "medicine_request",
           from: "APPROVED",
           to: "REJECTED",
-          actor: user("efda_officer"),
+          actor: user("hospital_admin", "f1"),
           reason: "x",
         })
       ).httpStatus

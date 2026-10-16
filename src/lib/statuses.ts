@@ -40,8 +40,17 @@ export const FACILITY_STATUSES = ["ACTIVE", "INACTIVE", "SUSPENDED"] as const;
 export const VEHICLE_STATUSES = ["ACTIVE", "IN_TRANSIT", "MAINTENANCE", "OFFLINE"] as const;
 export const DRIVER_STATUSES = ["ON_DUTY", "ON_TRIP", "OFF_DUTY"] as const;
 export const OUTBOX_STATUSES = ["PENDING", "SENT", "FAILED"] as const;
-/** Medicine disposal requests (CLAUDE.md §12): approved or rejected only by the EFDA officer. */
-export const MEDICINE_REQUEST_STATUSES = ["PENDING_APPROVAL", "APPROVED", "REJECTED"] as const;
+/** Medicine disposal requests (CLAUDE.md §12): approved or rejected, tracked via QR code to driver, facility, and disposal. */
+export const MEDICINE_REQUEST_STATUSES = [
+  "PENDING_APPROVAL",
+  "PENDING_EFDA_APPROVAL",
+  "PENDING_DRIVER_ASSIGNMENT",
+  "APPROVED",
+  "RECEIVED_BY_DRIVER",
+  "RECEIVED_AT_FACILITY",
+  "DISPOSED",
+  "REJECTED",
+] as const;
 
 export type WasteStatus = (typeof WASTE_STATUSES)[number];
 export type ContainerStatus = (typeof CONTAINER_STATUSES)[number];
@@ -129,8 +138,12 @@ export const STATUS_META: Record<StatusValue | DerivedFlag, { label: string; ton
   REVOKED: { label: "Revoked", tone: "danger" },
   SENT: { label: "Sent", tone: "success" },
   // medicine disposal request
-  PENDING_APPROVAL: { label: "Waiting for EFDA", tone: "warning" },
-  APPROVED: { label: "Approved", tone: "success" },
+  PENDING_APPROVAL: { label: "Pending approval", tone: "warning" },
+  PENDING_EFDA_APPROVAL: { label: "Pending EFDA approval", tone: "warning" },
+  PENDING_DRIVER_ASSIGNMENT: { label: "Pending driver assignment", tone: "info" },
+  APPROVED: { label: "Approved (ready for pickup)", tone: "info" },
+  RECEIVED_BY_DRIVER: { label: "Received by driver", tone: "progress" },
+  RECEIVED_AT_FACILITY: { label: "Received at facility", tone: "info" },
   REJECTED: { label: "Rejected", tone: "danger" },
   // invoice / contract
   DRAFT: { label: "Draft", tone: "draft" },

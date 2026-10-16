@@ -12,6 +12,7 @@ import { ExportLinks } from "@/components/shared/export-links";
  */
 export default async function HospitalStockRequestsPage() {
   const user = await requireAreaAccess("hospital");
+  const isStaff = user.role === "hospital_staff";
   const [stock, requests] = await Promise.all([
     getStockPage("all", null, null, 100),
     getDisposalRequests(),
@@ -24,15 +25,22 @@ export default async function HospitalStockRequestsPage() {
         </Link>
         <ExportLinks report="medicine-requests" label="requests" />
       </div>
-      {user.role === "hospital_admin" ? (
+      {isStaff ? (
         <RequestForm stock={stock.rows.filter((s) => s.quantity > 0)} />
       ) : (
-        <p className="text-sm text-zinc-300 bg-white/[0.04] border border-white/[0.08] rounded-xl p-3">
-          Only the facility&apos;s Hospital Administrator can request the disposal of medicines.
-        </p>
+        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-xs text-zinc-300">
+          <p className="font-semibold text-emerald-400">Hospital Administrator Approval Station</p>
+          <p className="mt-1 text-zinc-400">
+            Disposal requests are initiated exclusively by Hospital Staff. As Hospital Administrator, you review and approve or reject pending requests below before they route to the Super Administrator for driver assignment (or EFDA for expired medicine).
+          </p>
+        </div>
       )}
       <h3 className="text-sm font-semibold text-white">Requests of this facility</h3>
-      <RequestsList rows={requests} canDecide={false} showFacility={false} />
+      <RequestsList
+        rows={requests}
+        canDecide={user.role === "hospital_admin"}
+        showFacility={false}
+      />
     </div>
   );
 }

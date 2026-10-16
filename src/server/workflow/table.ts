@@ -165,13 +165,28 @@ export const TRANSITIONS: Table = {
   facility: anyToAny("facility", ADMIN),
   vehicle: anyToAny("vehicle", ["super_admin", "system"]),
   driver: anyToAny("driver", ["super_admin", "system"]),
-  // CLAUDE.md §12 (owner decision 11 Oct 2026): only the EFDA officer decides medicine disposal requests.
+  // CLAUDE.md §12: Hospital Admin approves → if expired medicine → PENDING_EFDA_APPROVAL → EFDA approves → PENDING_DRIVER_ASSIGNMENT
+  // If not expired → PENDING_DRIVER_ASSIGNMENT. Super Admin assigns driver → APPROVED.
   medicine_request: [
-    { from: ["PENDING_APPROVAL"], to: "APPROVED", who: ["efda_officer"] },
+    // Hospital Admin approves: goes to PENDING_EFDA_APPROVAL (for expired) or PENDING_DRIVER_ASSIGNMENT (for non-expired)
+    { from: ["PENDING_APPROVAL"], to: "PENDING_EFDA_APPROVAL", who: ["hospital_admin"] },
+    { from: ["PENDING_APPROVAL"], to: "PENDING_DRIVER_ASSIGNMENT", who: ["hospital_admin"] },
+    // EFDA officer approves expired medicine disposal
+    { from: ["PENDING_EFDA_APPROVAL"], to: "PENDING_DRIVER_ASSIGNMENT", who: ["efda_officer"] },
+    { from: ["PENDING_EFDA_APPROVAL"], to: "REJECTED", who: ["efda_officer"], reason: { column: "efdaDecisionReason" } },
+    // Super Admin assigns a driver → APPROVED (ready for pickup)
+    { from: ["PENDING_DRIVER_ASSIGNMENT"], to: "APPROVED", who: ["super_admin"] },
+    // Driver scans QR code at hospital
+    { from: ["APPROVED"], to: "RECEIVED_BY_DRIVER", who: ["driver"] },
+    // Disposal operator scans QR code upon delivery at disposal facility
+    { from: ["RECEIVED_BY_DRIVER"], to: "RECEIVED_AT_FACILITY", who: ["disposal_operator"] },
+    // Disposal operator completes destruction and issues certificate
+    { from: ["RECEIVED_AT_FACILITY"], to: "DISPOSED", who: ["disposal_operator"] },
+    // Hospital Admin or EFDA can reject at PENDING_APPROVAL
     {
       from: ["PENDING_APPROVAL"],
       to: "REJECTED",
-      who: ["efda_officer"],
+      who: ["hospital_admin", "efda_officer"],
       reason: { column: "decisionReason" },
     },
   ],

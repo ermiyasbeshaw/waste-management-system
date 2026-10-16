@@ -186,12 +186,25 @@ export const getDisposalRequests = cache(
       decision_reason: string | null;
       decided_at: Date | null;
       waste_code: string | null;
+      qr_code: string | null;
+      driver_id: string | null;
+      driver_name: string | null;
+      driver_scanned_at: Date | null;
+      operator_id: string | null;
+      operator_name: string | null;
+      operator_scanned_at: Date | null;
+      disposed_at: Date | null;
+      certificate_no: string | null;
+      certificate_pdf_key: string | null;
       lines: DisposalRequestRow["lines"] | null;
     }>(sql`
       SELECT r.id, r.request_code, f.id AS facility_id, f.code AS facility_code, f.name AS facility_name, r.status,
              u.full_name AS requested_by, r.created_at, r.container_count, r.weight_kg,
              to_char(r.scheduled_date, 'YYYY-MM-DD') AS scheduled_date,
              r.note, r.decision_reason, r.decided_at, w.waste_code,
+             r.qr_code, r.driver_id, ud.full_name AS driver_name, r.driver_scanned_at,
+             r.operator_id, uo.full_name AS operator_name, r.operator_scanned_at,
+             r.disposed_at, r.certificate_no, r.certificate_pdf_key,
              (SELECT json_agg(json_build_object('item', l.item, 'strength', l.strength, 'form', l.form, 'batch', l.batch,
                      'quantity', l.quantity, 'unit', l.unit, 'expiryDate', to_char(l.expiry_date, 'YYYY-MM-DD'))
                      ORDER BY l.item)
@@ -200,8 +213,10 @@ export const getDisposalRequests = cache(
       JOIN facilities f ON f.id = r.facility_id
       JOIN users u ON u.id = r.requested_by
       LEFT JOIN waste_records w ON w.id = r.waste_record_id
+      LEFT JOIN users ud ON ud.id = r.driver_id
+      LEFT JOIN users uo ON uo.id = r.operator_id
       WHERE ${where} AND ${byStatus}
-      ORDER BY (r.status = 'PENDING_APPROVAL') DESC, r.created_at DESC
+      ORDER BY (r.status = 'PENDING_APPROVAL') DESC, (r.status = 'APPROVED') DESC, r.created_at DESC
       LIMIT 100`);
     return result.map((r) => ({
       id: r.id,
@@ -217,6 +232,16 @@ export const getDisposalRequests = cache(
       decisionReason: r.decision_reason,
       decidedAt: r.decided_at ? new Date(r.decided_at).toISOString() : null,
       wasteCode: r.waste_code,
+      qrCode: r.qr_code ?? `QR-${r.request_code}`,
+      driverId: r.driver_id,
+      driverName: r.driver_name,
+      driverScannedAt: r.driver_scanned_at ? new Date(r.driver_scanned_at).toISOString() : null,
+      operatorId: r.operator_id,
+      operatorName: r.operator_name,
+      operatorScannedAt: r.operator_scanned_at ? new Date(r.operator_scanned_at).toISOString() : null,
+      disposedAt: r.disposed_at ? new Date(r.disposed_at).toISOString() : null,
+      certificateNo: r.certificate_no,
+      certificatePdfKey: r.certificate_pdf_key,
       lines: (r.lines ?? []).map((l) => ({ ...l, quantity: num(l.quantity) })),
     }));
   }

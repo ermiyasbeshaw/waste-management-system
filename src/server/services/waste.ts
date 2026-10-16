@@ -67,14 +67,6 @@ export async function registerWasteTx(
     });
   }
   const input = parsed.data;
-  // Medicine needs EFDA approval (CLAUDE.md §12): only an approved disposal request may register it.
-  if (EFDA_APPROVAL_CATEGORIES.includes(input.categoryCode) && !opts.viaApprovedRequest) {
-    throw new AppError(
-      "NEEDS_EFDA_APPROVAL",
-      409,
-      "Medicine waste needs EFDA approval. Use Medicine Stock → Disposal requests instead."
-    );
-  }
 
   const [facility] = await tx
     .select({ type: facilities.type, status: facilities.status })
@@ -141,6 +133,33 @@ export async function registerWasteTx(
     },
     requestId: requestId ?? null,
   });
+
+  if (!opts.viaApprovedRequest) {
+    const isExpired = input.categoryCode === "PHARMACEUTICAL";
+    const requestCode = await nextCode(tx, "medicine_request");
+    const hexToken = crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase();
+    const qrCode = `QR-${requestCode}-${hexToken}`;
+    const displayLabel = isExpired ? "Expired Drugs" : (category.name || "Normal Drugs");
+    const res = await tx.execute<{ id: string }>(
+      sql`INSERT INTO medicine_disposal_requests
+            (request_code, facility_id, requested_by, note, container_count, weight_kg, scheduled_date, qr_code,
+             waste_record_id, contains_expired, status)
+          VALUES
+            (${requestCode}, ${user.facilityId}, ${user.id}, ${'Medical waste: ' + displayLabel},
+             ${input.containerCount}, ${input.weightKg.toFixed(2)}, CURRENT_DATE, ${qrCode},
+             ${waste.id}, ${isExpired}, 'PENDING_APPROVAL')
+          RETURNING id`
+    );
+    const reqId = res.rows[0]?.id;
+    if (reqId) {
+      await tx.execute(
+        sql`INSERT INTO medicine_disposal_request_lines
+              (request_id, item, quantity, unit)
+            VALUES
+              (${reqId}, ${displayLabel}, ${input.containerCount}, 'container')`
+      );
+    }
+  }
 
   return { id: waste.id, wasteCode, containerCount: input.containerCount, containerCodes };
 }

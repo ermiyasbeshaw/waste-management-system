@@ -49,6 +49,16 @@ export interface DisposalRequestRow {
   decisionReason: string | null;
   decidedAt: string | null;
   wasteCode: string | null;
+  qrCode: string | null;
+  driverId: string | null;
+  driverName: string | null;
+  driverScannedAt: string | null;
+  operatorId: string | null;
+  operatorName: string | null;
+  operatorScannedAt: string | null;
+  disposedAt: string | null;
+  certificateNo: string | null;
+  certificatePdfKey: string | null;
   lines: {
     item: string;
     strength: string;

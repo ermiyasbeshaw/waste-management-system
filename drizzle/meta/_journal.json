@@ -71,6 +71,27 @@
       "when": 1792069924211,
       "tag": "0009_messy_namorita",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792078000000,
+      "tag": "0010_qr_disposal_tracking",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792085000000,
+      "tag": "0011_efda_driver_assignment_workflow",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792092000000,
+      "tag": "0012_disposal_vehicle_and_destination",
+      "breakpoints": true
     }
   ]
 }

@@ -144,7 +144,7 @@ export function RegisterWasteForm({ categories }: { categories: CategoryRef[] })
 
       <div className="space-y-1.5">
         <label htmlFor="categoryCode" className="block text-sm font-medium text-zinc-200">
-          Waste category
+          Waste / Drug category
         </label>
         <select
           id="categoryCode"
@@ -154,11 +154,18 @@ export function RegisterWasteForm({ categories }: { categories: CategoryRef[] })
           {...register("categoryCode")}
         >
           <option value="">Choose a category…</option>
-          {categories.map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.name} ({c.colourCode.toLowerCase()} container)
-            </option>
-          ))}
+          {categories.length > 0 ? (
+            categories.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.name}
+              </option>
+            ))
+          ) : (
+            <>
+              <option value="PHARMACEUTICAL">Expired Drugs</option>
+              <option value="GENERAL">Normal Drugs</option>
+            </>
+          )}
         </select>
         {errors.categoryCode && (
           <p id="categoryCode-error" className="text-xs text-rose-400">

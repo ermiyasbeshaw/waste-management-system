@@ -15,6 +15,7 @@ import {
 import { filled, id, timestamps, tsz } from "./_common";
 import { medicineRequestStatus } from "./enums";
 import { facilities } from "./facilities";
+import { vehicles } from "./fleet";
 import { users } from "./users";
 import { wasteRecords } from "./waste";
 
@@ -101,16 +102,39 @@ export const medicineDisposalRequests = pgTable(
     containerCount: integer("container_count").notNull(),
     weightKg: numeric("weight_kg", { precision: 10, scale: 2 }).notNull(),
     scheduledDate: date("scheduled_date"),
+    qrCode: text("qr_code"),
     decidedBy: uuid("decided_by").references(() => users.id, { onDelete: "restrict" }),
     decidedAt: tsz("decided_at"),
     decisionReason: text("decision_reason"),
     wasteRecordId: uuid("waste_record_id").references(() => wasteRecords.id, {
       onDelete: "restrict",
     }),
+    driverId: uuid("driver_id").references(() => users.id, { onDelete: "restrict" }),
+    driverScannedAt: tsz("driver_scanned_at"),
+    vehicleId: uuid("vehicle_id").references(() => vehicles.id, { onDelete: "restrict" }),
+    destinationFacilityId: uuid("destination_facility_id").references(() => facilities.id, {
+      onDelete: "restrict",
+    }),
+    operatorId: uuid("operator_id").references(() => users.id, { onDelete: "restrict" }),
+    operatorScannedAt: tsz("operator_scanned_at"),
+    disposedAt: tsz("disposed_at"),
+    certificateNo: text("certificate_no"),
+    certificateIssuedAt: tsz("certificate_issued_at"),
+    certificatePdfKey: text("certificate_pdf_key"),
+    /** Whether any disposal line is expired medicine (triggers EFDA approval route). */
+    containsExpired: boolean("contains_expired").notNull().default(false),
+    /** Super Admin who assigned the driver. */
+    assignedBy: uuid("assigned_by").references(() => users.id, { onDelete: "restrict" }),
+    assignedAt: tsz("assigned_at"),
+    /** EFDA decision tracking (separate from hospital admin decision). */
+    efdaDecidedBy: uuid("efda_decided_by").references(() => users.id, { onDelete: "restrict" }),
+    efdaDecidedAt: tsz("efda_decided_at"),
+    efdaDecisionReason: text("efda_decision_reason"),
     ...timestamps,
   },
   (t) => [
     uniqueIndex("medicine_disposal_requests_code_unique").on(t.requestCode),
+    uniqueIndex("medicine_disposal_requests_qr_code_unique").on(t.qrCode),
     index("medicine_disposal_requests_facility_status_idx").on(t.facilityId, t.status),
     check(
       "medicine_disposal_requests_code_format",
@@ -124,11 +148,11 @@ export const medicineDisposalRequests = pgTable(
     ),
     check(
       "medicine_disposal_requests_rejection_reason",
-      sql`${t.status} <> 'REJECTED' OR ${filled(t.decisionReason)}`
+      sql`${t.status} <> 'REJECTED' OR (${filled(t.decisionReason)} OR ${filled(t.efdaDecisionReason)})`
     ),
     check(
       "medicine_disposal_requests_approved_waste",
-      sql`(${t.status} = 'APPROVED') = (${t.wasteRecordId} IS NOT NULL)`
+      sql`(${t.status} IN ('PENDING_APPROVAL', 'REJECTED', 'PENDING_EFDA_APPROVAL', 'PENDING_DRIVER_ASSIGNMENT')) OR (${t.wasteRecordId} IS NOT NULL)`
     ),
   ]
 );
@@ -141,16 +165,14 @@ export const medicineDisposalRequestLines = pgTable(
     requestId: uuid("request_id")
       .notNull()
       .references(() => medicineDisposalRequests.id, { onDelete: "restrict" }),
-    stockId: uuid("stock_id")
-      .notNull()
-      .references(() => medicineStock.id, { onDelete: "restrict" }),
+    stockId: uuid("stock_id").references(() => medicineStock.id, { onDelete: "restrict" }),
     quantity: integer("quantity").notNull(),
     item: text("item").notNull(),
-    strength: text("strength").notNull(),
-    form: text("form").notNull(),
-    batch: text("batch").notNull(),
+    strength: text("strength"),
+    form: text("form"),
+    batch: text("batch"),
     unit: text("unit").notNull(),
-    expiryDate: date("expiry_date", { mode: "string" }).notNull(),
+    expiryDate: date("expiry_date", { mode: "string" }),
     createdAt: tsz("created_at").notNull().defaultNow(),
   },
   (t) => [

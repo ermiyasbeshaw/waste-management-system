@@ -7,6 +7,8 @@ import { useDriverData } from "@/components/driver/driver-shell";
 import { StopCard } from "@/components/driver/stop-card";
 import { StopActions } from "@/components/driver/stop-actions";
 import { StartTripButton } from "@/components/driver/start-trip-button";
+import { DriverQrScanner } from "@/components/driver/driver-qr-scanner";
+import { DriverAssignedDisposals } from "@/components/driver/driver-assigned-disposals";
 import { toEatDateString } from "@/lib/dates";
 
 /** /driver — today's active trip and its stops (single column, mobile-first). */
@@ -18,6 +20,8 @@ export default function DriverTodayPage() {
     const todays = upcomingTrips.find((t) => t.plannedDate === today);
     return (
       <div className="space-y-4">
+        <DriverAssignedDisposals />
+        <DriverQrScanner />
         <EmptyState title="No active trip" description="You have no trip in progress right now." />
         {todays && <StartTripButton tripId={todays.id} tripCode={todays.tripCode} />}
       </div>
@@ -33,6 +37,8 @@ export default function DriverTodayPage() {
 
   return (
     <div className="space-y-4">
+      <DriverAssignedDisposals />
+      <DriverQrScanner />
       {/* Active Trip Banner */}
       <section className="bg-[#111116] border border-amber-500/30 rounded-2xl p-4 space-y-3 shadow-lg">
         <div className="flex items-center justify-between gap-2">
