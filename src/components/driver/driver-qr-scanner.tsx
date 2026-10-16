@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { QrCode, Search, CheckCircle2, AlertTriangle, Truck, Package, Calendar, Hospital, ArrowRight, MapPin, Phone, Car, Building2 } from "lucide-react";
+import { QrCode, Search, CheckCircle2, AlertTriangle, Truck, Package, Calendar, Hospital, ArrowRight, MapPin, Phone, Car, Building2, ShieldCheck, Clock } from "lucide-react";
 import { getRequestVerificationAction, scanRequestByDriverAction } from "@/app/(desk)/hospital/stock/actions";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { CameraQrScanner } from "@/components/shared/camera-qr-scanner";
 import type { DisposalRequestRow } from "@/types/view-models";
 
 type VerifiedDetails = {
@@ -121,6 +122,15 @@ export function DriverQrScanner() {
           </p>
         </div>
       </div>
+
+      {/* Camera QR Scanner */}
+      <CameraQrScanner
+        onScan={(scanned) => {
+          setCode(scanned);
+          handleLookup(scanned);
+        }}
+        buttonLabel="Scan QR Code with Camera"
+      />
 
       {/* Input / Scanner Box */}
       <form
@@ -263,6 +273,63 @@ export function DriverQrScanner() {
               <strong className="text-zinc-300">Staff Note:</strong> {verified.note}
             </p>
           )}
+
+          {/* Dual Scan & Handover Verification Trail */}
+          <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
+            <h4 className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+              Scan Verification & Handover Trail:
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              {/* Driver Scan State */}
+              <div className={`p-2.5 rounded-xl border ${
+                verified.driverScannedAt
+                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                  : "bg-[#111116] border-white/[0.06] text-zinc-400"
+              }`}>
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold flex items-center gap-1.5">
+                    {verified.driverScannedAt ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Clock className="w-3.5 h-3.5 text-zinc-500" />}
+                    Driver QR Scan
+                  </span>
+                  <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                    verified.driverScannedAt ? "bg-emerald-500/20 text-emerald-300" : "bg-zinc-800 text-zinc-400"
+                  }`}>
+                    {verified.driverScannedAt ? "SCANNED" : "NOT SCANNED"}
+                  </span>
+                </div>
+                <p className="text-[11px] mt-1 text-zinc-400">
+                  {verified.driverScannedAt
+                    ? `Scanned by ${verified.driverName ?? "Driver"} on ${verified.driverScannedAt.slice(0, 16).replace("T", " ")}`
+                    : "Awaiting driver collection & hospital handover"}
+                </p>
+              </div>
+
+              {/* Operator Scan State */}
+              <div className={`p-2.5 rounded-xl border ${
+                verified.operatorScannedAt
+                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                  : "bg-[#111116] border-white/[0.06] text-zinc-400"
+              }`}>
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold flex items-center gap-1.5">
+                    {verified.operatorScannedAt ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Clock className="w-3.5 h-3.5 text-zinc-500" />}
+                    Operator Facility Scan
+                  </span>
+                  <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                    verified.operatorScannedAt ? "bg-emerald-500/20 text-emerald-300" : "bg-zinc-800 text-zinc-400"
+                  }`}>
+                    {verified.operatorScannedAt ? "SCANNED" : "NOT SCANNED"}
+                  </span>
+                </div>
+                <p className="text-[11px] mt-1 text-zinc-400">
+                  {verified.operatorScannedAt
+                    ? `Scanned by ${verified.operatorName ?? "Operator"} on ${verified.operatorScannedAt.slice(0, 16).replace("T", " ")}`
+                    : "Awaiting arrival & terminal check-in"}
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Action according to current state */}
           <div className="pt-2 border-t border-white/[0.06]">

@@ -1714,22 +1714,63 @@ export async function downloadDisposalCertificate(
   return inWorkflow(async (tx) => {
     const r = await one<{
       id: string;
+      request_code: string;
       certificate_no: string | null;
       certificate_pdf_key: string | null;
       status: string;
       facility_id: string;
+      facility_code: string;
+      facility_name: string;
+      weight_kg: string;
+      disposed_at: Date | null;
+      certificate_issued_at: Date | null;
+      waste_code: string | null;
     }>(
       tx,
-      sql`SELECT r.id, r.certificate_no, r.certificate_pdf_key, r.status, r.facility_id
+      sql`SELECT r.id, r.request_code, r.certificate_no, r.certificate_pdf_key, r.status, r.facility_id,
+                 f.code AS facility_code, f.name AS facility_name, r.weight_kg, r.disposed_at, r.certificate_issued_at,
+                 w.waste_code
           FROM medicine_disposal_requests r
+          JOIN facilities f ON f.id = r.facility_id
+          LEFT JOIN waste_records w ON w.id = r.waste_record_id
           WHERE r.id = ${id} ${scope}`
     );
     if (!r || !r.certificate_pdf_key) {
       throw new AppError("NOT_FOUND", 404, "Certificate not found for this request.");
     }
-    const bytes = await getStorage().get(r.certificate_pdf_key);
+    let bytes = await getStorage().get(r.certificate_pdf_key);
     if (!bytes) {
-      throw new AppError("FILE_MISSING", 404, "The certificate file is not available.");
+      const systemName = await getSetting("system_name", tx);
+      const lines = await all<{
+        item: string;
+        strength: string;
+        batch: string;
+        quantity: number;
+        unit: string;
+      }>(
+        tx,
+        sql`SELECT item, strength, batch, quantity, unit
+            FROM medicine_disposal_request_lines WHERE request_id = ${r.id} ORDER BY item`
+      );
+      const now = r.certificate_issued_at ? new Date(r.certificate_issued_at) : new Date();
+      bytes = await renderCertificatePdf({
+        systemName,
+        certificateNo: r.certificate_no ?? `CERT-${r.id.slice(0, 8)}`,
+        issuedOn: toEatDateString(now),
+        facilityName: r.facility_name,
+        facilityCode: r.facility_code,
+        wasteCode: r.waste_code ?? r.request_code,
+        categoryName: "PHARMACEUTICAL / EXPIRED MEDICINE",
+        weightKg: Number(r.weight_kg),
+        destroyedOn: toEatDateString(r.disposed_at ? new Date(r.disposed_at) : now),
+        methodName: "High Temperature Incineration / Safe Disposal",
+        verifyUrl: `${env.APP_BASE_URL.replace(/\/$/, "")}/verify/disposal/${r.id}`,
+        destroyed: lines.map(
+          (l) => `${l.item}${l.strength ? ` ${l.strength}` : ""} - ${l.quantity} ${l.unit} [Batch: ${l.batch}]`
+        ),
+        exceptions: [],
+      });
+      await getStorage().put(r.certificate_pdf_key, bytes, "application/pdf");
     }
     await writeAudit(tx, {
       actor: { userId: user.id, role: user.role },

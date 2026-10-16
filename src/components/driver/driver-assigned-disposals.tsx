@@ -27,6 +27,7 @@ import {
   getDriverAssignedRequestsAction,
   scanRequestByDriverAction,
 } from "@/app/(desk)/hospital/stock/actions";
+import { CameraQrScanner } from "@/components/shared/camera-qr-scanner";
 
 type AssignedDisposal = {
   id: string;
@@ -205,6 +206,14 @@ export function DriverAssignedDisposals() {
               <p>Scan or enter the unique QR code on the hospital disposal package to record handover.</p>
             </div>
           )}
+
+          {/* Camera Scanner */}
+          <CameraQrScanner
+            onScan={(code) => {
+              setScannedInput(code);
+            }}
+            buttonLabel="Use Camera to Scan QR Code"
+          />
 
           <form onSubmit={handleExecuteScan} className="space-y-3">
             <div>
@@ -469,6 +478,51 @@ export function DriverAssignedDisposals() {
                     <span className="text-zinc-500 text-[10px] block uppercase font-medium">Containers</span>
                     <span className="font-mono font-bold text-white text-sm">
                       {req.container_count} count
+                    </span>
+                  </div>
+                </div>
+
+                {/* Driver & Operator QR Scan Verification Status */}
+                <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                  <div className={`p-2 rounded-lg border ${
+                    req.driver_scanned_at
+                      ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-300"
+                      : "bg-[#111116] border-white/[0.04] text-zinc-400"
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-[11px] flex items-center gap-1">
+                        {req.driver_scanned_at ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Clock className="w-3.5 h-3.5 text-zinc-500" />}
+                        Driver Scan
+                      </span>
+                      <span className={`text-[9px] font-mono font-bold px-1 rounded ${
+                        req.driver_scanned_at ? "bg-emerald-500/20 text-emerald-300" : "bg-zinc-800 text-zinc-400"
+                      }`}>
+                        {req.driver_scanned_at ? "SCANNED" : "NOT SCANNED"}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-zinc-500 block mt-0.5 truncate">
+                      {req.driver_scanned_at ? `Scanned on ${req.driver_scanned_at.slice(0, 16).replace("T", " ")}` : "Pending pickup"}
+                    </span>
+                  </div>
+
+                  <div className={`p-2 rounded-lg border ${
+                    req.operator_scanned_at
+                      ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-300"
+                      : "bg-[#111116] border-white/[0.04] text-zinc-400"
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-[11px] flex items-center gap-1">
+                        {req.operator_scanned_at ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Clock className="w-3.5 h-3.5 text-zinc-500" />}
+                        Operator Scan
+                      </span>
+                      <span className={`text-[9px] font-mono font-bold px-1 rounded ${
+                        req.operator_scanned_at ? "bg-emerald-500/20 text-emerald-300" : "bg-zinc-800 text-zinc-400"
+                      }`}>
+                        {req.operator_scanned_at ? "SCANNED" : "NOT SCANNED"}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-zinc-500 block mt-0.5 truncate">
+                      {req.operator_scanned_at ? `Scanned by ${req.operator_name ?? "Operator"}` : "Pending facility reception"}
                     </span>
                   </div>
                 </div>
