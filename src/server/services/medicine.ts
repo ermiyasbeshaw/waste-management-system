@@ -798,7 +798,7 @@ export async function assignDriverToRequest(
       sql`SELECT u.id, u.full_name, u.email, d.default_vehicle_id
           FROM users u
           LEFT JOIN drivers d ON d.user_id = u.id
-          WHERE u.id = ${driverUserId} AND u.role = 'driver' AND u.active FOR UPDATE`
+          WHERE u.id = ${driverUserId} AND u.role = 'driver' AND u.active FOR UPDATE OF u`
     );
     if (!driver) throw new AppError("NOT_FOUND", 404, "Driver not found or inactive.");
 
