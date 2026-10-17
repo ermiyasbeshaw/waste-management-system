@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarCheck, CheckCircle2, Clock, CreditCard, PackagePlus, Truck } from "lucide-react";
+import { CalendarCheck, CheckCircle2, Clock, CreditCard, Truck } from "lucide-react";
 import { formatEtb } from "@/lib/money";
 import { KpiCard } from "@/components/shared/kpi-card";
 import {
@@ -9,7 +9,6 @@ import {
   getHospitalOutstanding,
   getHospitalWastePage,
 } from "@/server/queries/hospital";
-import { getCurrentUser } from "@/server/auth/current-user";
 import { CertificateTable, InvoiceTable, WasteTable } from "./columns";
 
 /**
@@ -27,21 +26,6 @@ function OlderLink({ href, label }: { href: string; label: string }) {
         className="min-h-[44px] inline-flex items-center px-4 rounded-xl text-xs font-semibold bg-white/[0.05] hover:bg-white/[0.1] text-zinc-200 border border-white/[0.08]"
       >
         {label} →
-      </Link>
-    </div>
-  );
-}
-
-/** Entry point to /hospital/waste/new (hospital_admin and hospital_staff may register waste). */
-function RegisterWasteLink() {
-  return (
-    <div className="flex justify-end">
-      <Link
-        href="/hospital/waste/new"
-        className="min-h-[44px] inline-flex items-center gap-2 px-4 rounded-xl text-sm font-semibold bg-blue-500 hover:bg-blue-400 text-white"
-      >
-        <PackagePlus className="w-4 h-4" aria-hidden="true" />
-        Register waste
       </Link>
     </div>
   );
@@ -97,12 +81,9 @@ export async function RecentWasteWidget() {
 }
 
 export async function WasteListWidget({ cursor }: { cursor: string | null }) {
-  const user = await getCurrentUser();
-  const canRegister = user?.role === "hospital_admin";
   const page = await getHospitalWastePage(cursor);
   return (
     <div className="space-y-3">
-      {canRegister && <RegisterWasteLink />}
       <WasteTable
         rows={page.rows}
         title="All Facility Waste Records"

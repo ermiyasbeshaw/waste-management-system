@@ -54,7 +54,7 @@ export function DashboardBottomBar() {
         return [
           { href: "/hospital", label: "Station", icon: Building2 },
           { href: "/hospital/waste", label: "Waste", icon: Activity },
-          { href: "/hospital/waste/new", label: "Register", icon: PlusCircle },
+          { href: "/hospital/stock/requests", label: "Requests", icon: ClipboardCheck },
           { href: "/hospital/stock", label: "Stock", icon: Pill },
           { href: "#menu", label: "All Tabs", icon: Menu, isMenuToggle: true },
         ];
