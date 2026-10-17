@@ -9,6 +9,7 @@ import {
   getHospitalOutstanding,
   getHospitalWastePage,
 } from "@/server/queries/hospital";
+import { getCurrentUser } from "@/server/auth/current-user";
 import { CertificateTable, InvoiceTable, WasteTable } from "./columns";
 
 /**
@@ -96,10 +97,12 @@ export async function RecentWasteWidget() {
 }
 
 export async function WasteListWidget({ cursor }: { cursor: string | null }) {
+  const user = await getCurrentUser();
+  const canRegister = user?.role === "hospital_admin";
   const page = await getHospitalWastePage(cursor);
   return (
     <div className="space-y-3">
-      <RegisterWasteLink />
+      {canRegister && <RegisterWasteLink />}
       <WasteTable
         rows={page.rows}
         title="All Facility Waste Records"
