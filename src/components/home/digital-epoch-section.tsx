@@ -2,54 +2,83 @@
 
 import React from "react";
 import { motion } from "motion/react";
-import { ChevronRight, ArrowRight } from "lucide-react";
+import {
+  ChevronRight,
+  ArrowRight,
+  Building2,
+  Hospital,
+  HeartPulse,
+  Stethoscope,
+  Syringe,
+  Activity,
+  ShieldCheck,
+  Microscope,
+} from "lucide-react";
 
-interface BrandLogoItem {
+interface MedicalFacilityItem {
   name: string;
-  src: string;
+  sub: string;
+  fullName: string;
+  icon: React.ComponentType<{ className?: string }>;
   gradient: string;
 }
 
-const BRAND_LOGOS: BrandLogoItem[] = [
+const SYSTEM_FACILITIES: MedicalFacilityItem[] = [
   {
-    name: "Procure",
-    src: "https://svgl.app/library/procure.svg",
-    gradient: "linear-gradient(135deg, #1d4ed8, #3b82f6)",
+    name: "Dil Chora",
+    sub: "Referral Hospital",
+    fullName: "Dil Chora Referral Hospital (DD-REF-001)",
+    icon: Building2,
+    gradient: "linear-gradient(135deg, #0a3822, #10b981)",
   },
   {
-    name: "Shopify",
-    src: "https://svgl.app/library/shopify.svg",
-    gradient: "linear-gradient(135deg, #eab308, #facc15)",
+    name: "Sabian",
+    sub: "General Hospital",
+    fullName: "Sabian General Hospital (DD-GEN-002)",
+    icon: Hospital,
+    gradient: "linear-gradient(135deg, #065f46, #059669)",
   },
   {
-    name: "Blender",
-    src: "https://svgl.app/library/blender.svg",
-    gradient: "linear-gradient(135deg, #2563eb, #60a5fa)",
+    name: "Bilal",
+    sub: "General Hospital",
+    fullName: "Bilal General Hospital (DD-GEN-003)",
+    icon: HeartPulse,
+    gradient: "linear-gradient(135deg, #0f766e, #14b8a6)",
   },
   {
-    name: "Figma",
-    src: "https://svgl.app/library/figma.svg",
-    gradient: "linear-gradient(135deg, #9333ea, #c084fc)",
+    name: "Yebego",
+    sub: "General Hospital",
+    fullName: "Yebego General Hospital (DD-GEN-004)",
+    icon: Stethoscope,
+    gradient: "linear-gradient(135deg, #1e3a8a, #3b82f6)",
   },
   {
-    name: "Spotify",
-    src: "https://svgl.app/library/spotify.svg",
-    gradient: "linear-gradient(135deg, #e11d48, #fb7185)",
+    name: "Kezira",
+    sub: "Primary Hospital",
+    fullName: "Kezira Primary Hospital & Clinic (DD-PRI-005)",
+    icon: Syringe,
+    gradient: "linear-gradient(135deg, #047857, #34d399)",
   },
   {
-    name: "Lottielab",
-    src: "https://svgl.app/library/lottielab.svg",
-    gradient: "linear-gradient(135deg, #65a30d, #a3e635)",
+    name: "Genda Kore",
+    sub: "Health Center",
+    fullName: "Genda Kore Health Center (DD-PRI-006)",
+    icon: Activity,
+    gradient: "linear-gradient(135deg, #0e7490, #06b6d4)",
   },
   {
-    name: "Google Cloud",
-    src: "https://svgl.app/library/google-cloud.svg",
-    gradient: "linear-gradient(135deg, #0284c7, #38bdf8)",
+    name: "Shinile",
+    sub: "Maternal Health",
+    fullName: "Shinile Maternal & Child Health (DD-PRI-007)",
+    icon: ShieldCheck,
+    gradient: "linear-gradient(135deg, #15803d, #22c55e)",
   },
   {
-    name: "Bing",
-    src: "https://svgl.app/library/bing.svg",
-    gradient: "linear-gradient(135deg, #0d9488, #2dd4bf)",
+    name: "Melka Jebdu",
+    sub: "Poly Clinic",
+    fullName: "Melka Jebdu Poly Clinic (DD-CLI-008)",
+    icon: Microscope,
+    gradient: "linear-gradient(135deg, #115e59, #2dd4bf)",
   },
 ];
 
@@ -144,7 +173,7 @@ export function DigitalEpochSection() {
         </div>
       </div>
 
-      {/* 5. Seamless Marquee Logo Scroller Component */}
+      {/* 5. Seamless Marquee Hospital Scroller Component */}
       <div
         className="mt-6 sm:mt-8 overflow-hidden relative w-full max-w-7xl mx-auto"
         style={{
@@ -154,24 +183,28 @@ export function DigitalEpochSection() {
       >
         <div className="animate-marquee gap-4 sm:gap-5 py-2 sm:py-3">
           {/* Render list twice to ensure seamless infinite loop */}
-          {[...BRAND_LOGOS, ...BRAND_LOGOS].map((brand, idx) => (
+          {[...SYSTEM_FACILITIES, ...SYSTEM_FACILITIES].map((facility, idx) => (
             <div
-              key={`${brand.name}-${idx}`}
-              className="group relative h-20 sm:h-24 w-32 sm:w-40 shrink-0 flex items-center justify-center rounded-full bg-white border border-slate-200/60 shadow-sm hover:border-emerald-500 transition-all overflow-hidden cursor-pointer"
+              key={`${facility.name}-${idx}`}
+              title={facility.fullName}
+              className="group relative h-20 sm:h-24 w-36 sm:w-44 shrink-0 flex items-center justify-center rounded-full bg-white border border-slate-200/60 shadow-sm hover:border-emerald-500 transition-all overflow-hidden cursor-pointer select-none"
             >
               {/* Gradient hover overlay: scaled 1.5 and 0 opacity, drops to scale 1 and opacity 100 on group-hover */}
               <div
                 className="absolute inset-0 scale-150 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-500 rounded-full"
-                style={{ background: brand.gradient }}
+                style={{ background: facility.gradient }}
               />
 
-              {/* Logo icon with inversion on hover */}
-              <img
-                src={brand.src}
-                alt={brand.name}
-                className="relative z-10 h-7 sm:h-8 w-auto max-w-[70px] sm:max-w-[80px] object-contain transition-all duration-300 group-hover:brightness-0 group-hover:invert"
-                loading="lazy"
-              />
+              {/* Content Layer with Medical Icon and Hospital Name */}
+              <div className="relative z-10 flex flex-col items-center justify-center px-3 text-center transition-all duration-300">
+                <facility.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a3822] group-hover:text-white transition-colors duration-300 mb-1" />
+                <span className="text-[11px] sm:text-[12px] font-bold text-[#0a3822] group-hover:text-white leading-tight transition-colors duration-300 whitespace-nowrap">
+                  {facility.name}
+                </span>
+                <span className="text-[8px] sm:text-[9px] font-semibold text-emerald-700 group-hover:text-emerald-100 uppercase tracking-wider transition-colors duration-300 whitespace-nowrap">
+                  {facility.sub}
+                </span>
+              </div>
             </div>
           ))}
         </div>
