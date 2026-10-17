@@ -22,3 +22,6 @@ coverage/
 
 # Local IDE and assistant settings
 .claude/
+
+# Temporary office and system lock files
+~$*

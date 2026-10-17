@@ -32,19 +32,19 @@ export function VerifyBox() {
           setValue(e.target.value);
           setError(null);
         }}
-        placeholder="Paste the certificate link or code"
+        placeholder="Paste certificate link or code (e.g. CERT-2026-0001)"
         autoComplete="off"
-        className="flex-1 min-h-[48px] rounded-xl bg-[#161622] border border-white/[0.12] px-4 text-sm text-zinc-100 focus:outline-none focus:border-emerald-500/60"
+        className="flex-1 min-h-[50px] rounded-full bg-[#f8faf8] border border-[#cbe0d0] px-5 text-sm text-[#0a3822] placeholder:text-zinc-400 focus:outline-none focus:border-[#0a3822] shadow-inner"
       />
       <button
         type="submit"
-        className="min-h-[48px] px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-semibold inline-flex items-center justify-center gap-2"
+        className="min-h-[50px] px-8 rounded-full bg-[#0a3822] hover:bg-[#072818] text-white text-xs font-bold tracking-tight inline-flex items-center justify-center gap-2 shadow-md hover:scale-105 transition-all"
       >
-        <ShieldCheck className="w-4 h-4" aria-hidden="true" />
-        Verify
+        <ShieldCheck className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+        Verify Now
       </button>
       {error && (
-        <p role="alert" className="text-sm text-rose-300 sm:basis-full">
+        <p role="alert" className="text-xs text-rose-600 font-semibold sm:basis-full text-center">
           {error}
         </p>
       )}

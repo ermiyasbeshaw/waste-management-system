@@ -89,7 +89,7 @@ export function Sidebar() {
     .toUpperCase();
 
   return (
-    <aside className="w-64 bg-[#0a0a0d] border-r border-white/[0.07] flex flex-col justify-between shrink-0 h-screen sticky top-0 z-30">
+    <aside className="hidden md:flex w-64 bg-[#0a0a0d] border-r border-white/[0.07] flex-col justify-between shrink-0 h-screen sticky top-0 z-30">
       <div className="p-4 space-y-4">
         {/* Brand Header */}
         <div className="flex items-center justify-between px-2 pt-2">

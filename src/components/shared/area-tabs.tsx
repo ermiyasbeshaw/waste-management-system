@@ -52,7 +52,7 @@ function TabList({ tabs, accent, query }: { tabs: AreaTab[]; accent: TabAccent; 
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center gap-2 border-b border-white/[0.06] pb-3 overflow-x-auto">
+    <nav className="flex items-center gap-2 border-b border-white/[0.06] pb-3 overflow-x-auto touch-pan-x scrollbar-none py-1">
       {tabs.map((tab) => {
         const active = pathname === tab.href;
         return (
