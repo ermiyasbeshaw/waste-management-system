@@ -235,16 +235,10 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
       {/* ------------------------------------------------------------- */}
       <section id="hero" className="pt-8 sm:pt-14 pb-16 px-4 sm:px-6 relative">
         <div className="mx-auto max-w-7xl">
-          {/* Top Pill Card (Screenshot 1 top-right feature) */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
-            {/* Left Tag */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#e0eee3] border border-[#c6dfcb] text-[#0a3822] text-xs font-bold uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-emerald-600" />
-              <span>Dire Dawa Regional Health Pilot Hub • 120+ Healthcare Facilities</span>
-            </div>
-
+          {/* Top Pill Banner (Screenshot 1 top-right feature) */}
+          <div className="flex justify-end mb-8 sm:mb-10">
             {/* Dark green pill banner matching Screenshot 1 */}
-            <div className="bg-[#0a3822] text-white rounded-full p-2 pr-6 flex items-center gap-4 shadow-xl border border-emerald-500/20 max-w-md">
+            <div className="bg-[#0a3822] text-white rounded-full p-2 pr-6 flex items-center gap-4 shadow-xl border border-emerald-500/20 max-w-md w-full sm:w-auto">
               <div className="w-12 h-12 rounded-full bg-emerald-800/60 flex items-center justify-center shrink-0 border border-emerald-400/30">
                 {/* 3D Capsule Pill Graphic */}
                 <div className="w-7 h-3.5 rounded-full bg-gradient-to-r from-emerald-400 to-white shadow -rotate-12 flex">
