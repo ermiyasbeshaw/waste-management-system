@@ -60,17 +60,6 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
         </button>
       </aside>
 
-      {/* ------------------------------------------------------------- */}
-      {/* 1. TOP UTILITY BAR                                            */}
-      {/* ------------------------------------------------------------- */}
-      <div className="border-b border-[#d8e6db] bg-[#e4efe7] text-[11px] text-[#2c533e]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 h-8 sm:h-9 flex items-center justify-center sm:justify-start">
-          <div className="flex items-center gap-2 font-medium truncate">
-            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse shrink-0" />
-            <span className="truncate">Dire Dawa Regional Health Pilot Hub • 120+ Healthcare Facilities</span>
-          </div>
-        </div>
-      </div>
 
       {/* ------------------------------------------------------------- */}
       {/* 2. MAIN HEADER / NAVIGATION                                   */}
@@ -251,7 +240,7 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
             {/* Left Tag */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#e0eee3] border border-[#c6dfcb] text-[#0a3822] text-xs font-bold uppercase tracking-wider">
               <span className="w-2 h-2 rounded-full bg-emerald-600" />
-              <span>Certified Healthcare Waste Management System</span>
+              <span>Dire Dawa Regional Health Pilot Hub • 120+ Healthcare Facilities</span>
             </div>
 
             {/* Dark green pill banner matching Screenshot 1 */}
