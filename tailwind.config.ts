@@ -55,6 +55,11 @@ const config: Config = {
         "glow-purple": "0 0 20px -5px rgba(139, 92, 246, 0.25)",
         card: "0 4px 20px -2px rgba(0, 0, 0, 0.5)",
       },
+      fontFamily: {
+        helvetica: ['"Helvetica Regular"', "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Outfit", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
     },
   },
   plugins: [],

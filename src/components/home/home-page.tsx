@@ -100,6 +100,9 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
             <a href="#how" className="hover:text-[#0a3822] transition-colors">
               How It Works
             </a>
+            <a href="#ecosystem" className="hover:text-[#0a3822] transition-colors">
+              RIVR Showcase
+            </a>
             <a href="#verify" className="hover:text-[#0a3822] transition-colors">
               Verify Certificate
             </a>
@@ -189,6 +192,13 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
               className="block py-2 text-sm font-bold text-[#0a3822]"
             >
               How It Works
+            </a>
+            <a
+              href="#ecosystem"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-sm font-bold text-[#0a3822]"
+            >
+              RIVR Showcase
             </a>
             <a
               href="#verify"
