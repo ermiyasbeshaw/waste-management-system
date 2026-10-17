@@ -17,10 +17,12 @@ import {
   MapPin,
   Flame,
   PlusCircle,
+  Menu,
   LucideIcon,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { useDevSession } from "@/components/dev/dev-role-provider";
+import { useMobileSidebar } from "@/components/shared/mobile-sidebar-context";
 import type { UserRole } from "@/types";
 
 interface NavItem {
@@ -28,11 +30,13 @@ interface NavItem {
   label: string;
   icon: LucideIcon;
   badge?: number;
+  isMenuToggle?: boolean;
 }
 
 export function DashboardBottomBar() {
   const pathname = usePathname();
   const { activeRole, user } = useDevSession();
+  const { open } = useMobileSidebar();
 
   if (!user || !activeRole) return null;
 
@@ -41,10 +45,10 @@ export function DashboardBottomBar() {
       case "super_admin":
         return [
           { href: "/admin", label: "Overview", icon: LayoutDashboard },
+          { href: "/admin/trips", label: "Trips", icon: MapPin },
           { href: "/admin/fleet", label: "Radar", icon: Truck },
           { href: "/admin/finance", label: "Finance", icon: CreditCard },
-          { href: "/admin/trips", label: "Trips", icon: MapPin },
-          { href: "/admin/alerts", label: "Alerts", icon: AlertTriangle },
+          { href: "#menu", label: "All (12)", icon: Menu, isMenuToggle: true },
         ];
       case "hospital_admin":
         return [
@@ -52,7 +56,7 @@ export function DashboardBottomBar() {
           { href: "/hospital/waste", label: "Waste", icon: Activity },
           { href: "/hospital/waste/new", label: "Register", icon: PlusCircle },
           { href: "/hospital/stock", label: "Stock", icon: Pill },
-          { href: "/hospital/invoices", label: "Invoices", icon: CreditCard },
+          { href: "#menu", label: "All Tabs", icon: Menu, isMenuToggle: true },
         ];
       case "hospital_staff":
         return [
@@ -60,7 +64,7 @@ export function DashboardBottomBar() {
           { href: "/hospital/waste", label: "Waste", icon: Activity },
           { href: "/hospital/waste/new", label: "Register", icon: PlusCircle },
           { href: "/hospital/stock", label: "Stock", icon: Pill },
-          { href: "/hospital/certificates", label: "Certs", icon: FileCheck2 },
+          { href: "#menu", label: "All Tabs", icon: Menu, isMenuToggle: true },
         ];
       case "efda_officer":
         return [
@@ -68,7 +72,7 @@ export function DashboardBottomBar() {
           { href: "/regulator/audit", label: "Audit", icon: History },
           { href: "/regulator/certificates", label: "Registry", icon: FileCheck2 },
           { href: "/regulator/map", label: "Route Map", icon: MapPin },
-          { href: "/regulator/approvals", label: "Approvals", icon: ClipboardCheck },
+          { href: "#menu", label: "All Tabs", icon: Menu, isMenuToggle: true },
         ];
       case "driver":
         return [
@@ -138,6 +142,24 @@ export function DashboardBottomBar() {
         style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
       >
         {items.map((item) => {
+          if (item.isMenuToggle) {
+            const Icon = item.icon;
+            return (
+              <li key={item.href} className="h-full">
+                <button
+                  type="button"
+                  onClick={open}
+                  className="w-full h-full flex flex-col items-center justify-center gap-1 text-[10px] tracking-tight transition-all relative select-none text-zinc-400 hover:text-zinc-200 active:scale-95"
+                >
+                  <Icon className="w-5 h-5 text-zinc-400" aria-hidden="true" />
+                  <span className="truncate max-w-[56px] text-center leading-none">
+                    {item.label}
+                  </span>
+                </button>
+              </li>
+            );
+          }
+
           const isActive =
             pathname === item.href ||
             (item.href !== "/admin" &&

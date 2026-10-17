@@ -1,24 +1,33 @@
 "use client";
 
 import React from "react";
-import { ShieldCheck } from "lucide-react";
+import { Menu, ShieldCheck } from "lucide-react";
 import { DevAccountMenu } from "@/components/dev/dev-account-menu";
 import { AccountMenu } from "@/server/auth/clerk-ui";
 import { useDevSession } from "@/components/dev/dev-role-provider";
+import { useMobileSidebar } from "./mobile-sidebar-context";
 import { ROLE_CONFIGS } from "@/types";
 
 /**
- * Desktop header. The search box, theme, notifications and settings buttons of the prototype were removed
- * in Gate 1a because those features do not exist yet (CLAUDE.md §13: no buttons for non-existent features).
+ * Desktop & mobile header. Supports mobile navigation drawer toggle.
  */
 export function Header() {
   const { activeRole } = useDevSession();
+  const { open } = useMobileSidebar();
   const config = activeRole ? ROLE_CONFIGS[activeRole] : null;
 
   return (
     <header className="h-16 border-b border-white/[0.07] bg-[#09090c]/80 backdrop-blur-md sticky top-0 z-20 px-4 md:px-6 flex items-center justify-between">
-      {/* Mobile Brand & Role Display */}
+      {/* Mobile Brand, Drawer Button & Role Display */}
       <div className="flex md:hidden items-center gap-2">
+        <button
+          type="button"
+          onClick={open}
+          aria-label="Open Navigation Menu"
+          className="p-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white active:scale-95 transition-all mr-0.5"
+        >
+          <Menu className="w-4 h-4" />
+        </button>
         <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400">
           <ShieldCheck className="w-4 h-4" />
         </div>

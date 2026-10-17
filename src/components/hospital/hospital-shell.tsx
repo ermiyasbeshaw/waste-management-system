@@ -2,7 +2,6 @@ import React, { Suspense } from "react";
 import { AlertCircle, Building2 } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { ErrorState } from "@/components/shared/error-state";
-import { AreaTabs } from "@/components/shared/area-tabs";
 import { KpiRowSkeleton } from "@/components/shared/skeleton";
 import type { HospitalFacility } from "@/types/view-models";
 import { HospitalKpisWidget } from "./widgets";
@@ -57,23 +56,6 @@ export function HospitalShell({
       <Suspense fallback={<KpiRowSkeleton />}>
         <HospitalKpisWidget />
       </Suspense>
-
-      <AreaTabs
-        accent="blue"
-        tabs={[
-          { href: "/hospital", label: "Facility Overview" },
-          { href: "/hospital/waste", label: "Waste Records" },
-          { href: "/hospital/stock", label: "Medicine Stock" },
-          { href: "/hospital/stock/requests", label: "Disposal Requests" },
-          ...(canSeeInvoices
-            ? [
-                { href: "/hospital/certificates", label: "Destruction Certificates" },
-                { href: "/hospital/invoices", label: "Billing & Invoices" },
-                { href: "/hospital/users", label: "Users & Pickup Codes" },
-              ]
-            : []),
-        ]}
-      />
 
       {children}
     </div>
