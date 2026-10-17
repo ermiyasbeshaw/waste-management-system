@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { VerifyBox } from "./verify-box";
 import { CustomerSupportAi } from "./customer-support-ai";
+import { DigitalEpochSection } from "./digital-epoch-section";
 
 interface HomePageProps {
   signInHref: string;
@@ -297,6 +298,9 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
                 </div>
               </div>
             </div>
+
+            {/* Digital Epoch Hero Section with Motion & Seamless Marquee Scroller */}
+            <DigitalEpochSection />
 
             {/* Left and Right Floating Cards (Flanking the hero, matching Screenshot 1) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 sm:mt-12 text-left">
