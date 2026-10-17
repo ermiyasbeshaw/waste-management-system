@@ -43,19 +43,19 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
       <CustomerSupportAi isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
 
       {/* Floating AI Assistant Trigger Button (Bottom Right) */}
-      <aside aria-label="Support Assistant" className="fixed bottom-6 right-6 z-40">
+      <aside aria-label="Support Assistant" className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40">
         <button
           type="button"
           onClick={() => setIsAiOpen(true)}
-          className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#0a3822] hover:bg-[#072818] text-white shadow-2xl hover:shadow-emerald-900/30 transition-all hover:scale-105 border border-emerald-400/30 group"
+          className="flex items-center gap-2 sm:gap-2.5 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-full bg-[#0a3822] hover:bg-[#072818] active:scale-95 text-white shadow-2xl hover:shadow-emerald-900/30 transition-all hover:scale-105 border border-emerald-400/30 group"
           aria-label="Open SafeWaste Customer Support AI"
         >
           <div className="relative">
-            <Bot className="w-5 h-5 text-emerald-400 group-hover:rotate-12 transition-transform" />
+            <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 group-hover:rotate-12 transition-transform" />
             <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400" />
           </div>
-          <span className="text-xs font-bold tracking-tight">Ask SafeWaste AI</span>
+          <span className="text-[11px] sm:text-xs font-bold tracking-tight">Ask SafeWaste AI</span>
           <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
         </button>
       </aside>
@@ -64,26 +64,10 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
       {/* 1. TOP UTILITY BAR                                            */}
       {/* ------------------------------------------------------------- */}
       <div className="border-b border-[#d8e6db] bg-[#e4efe7] text-[11px] text-[#2c533e]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 h-9 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-medium">
-            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-            <span>Dire Dawa Regional Health Pilot Hub • 120+ Healthcare Facilities</span>
-          </div>
-          <div className="flex items-center gap-5">
-            <a href="#verify" className="hover:text-[#0a3822] font-semibold transition-colors">
-              Verify Certificate
-            </a>
-            <a href="tel:+251988969696" className="hidden sm:inline hover:text-[#0a3822] transition-colors">
-              Hotline: +251 988 969696
-            </a>
-            {signUpHref && (
-              <Link href={signUpHref} className="hover:text-[#0a3822] font-medium transition-colors">
-                Register
-              </Link>
-            )}
-            <Link href={signInHref} className="hover:text-[#0a3822] font-semibold transition-colors">
-              Sign in
-            </Link>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 h-8 sm:h-9 flex items-center justify-center sm:justify-start">
+          <div className="flex items-center gap-2 font-medium truncate">
+            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse shrink-0" />
+            <span className="truncate">Dire Dawa Regional Health Pilot Hub • 120+ Healthcare Facilities</span>
           </div>
         </div>
       </div>
@@ -94,7 +78,7 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
       <header className="sticky top-0 z-30 bg-[#edf4ef]/90 backdrop-blur-md border-b border-[#d8e6db]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-20 flex items-center justify-between">
           {/* Brand Logo (Medico style with capsule icon) */}
-          <Link href="/" className="flex items-center gap-2.5 group">
+          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
             <div className="w-10 h-10 rounded-2xl bg-[#0a3822] flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
               {/* Modern capsule glyph */}
               <div className="w-5 h-5 rounded-full border-2 border-emerald-400 border-t-white flex items-center justify-center -rotate-45">
@@ -139,31 +123,45 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
             </button>
           </nav>
 
-          {/* Right Action Button: Medico style dark forest green pill button */}
-          <div className="hidden sm:flex items-center gap-3">
+          {/* Right Action Buttons (Desktop): Register and Sign In (Replacing schedule option) */}
+          <div className="hidden sm:flex items-center gap-2.5 shrink-0">
             <Link
               href={signInHref}
-              className="px-6 py-2.5 rounded-full bg-[#0a3822] hover:bg-[#072818] text-white text-xs font-bold tracking-tight inline-flex items-center gap-2 shadow-md hover:shadow-lg transition-all hover:gap-3"
+              className="px-4 py-2 rounded-full text-xs font-bold text-[#0a3822] hover:bg-[#0a3822]/10 transition-colors"
             >
-              <span>Schedule Collection</span>
-              <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+              Sign In
             </Link>
+            {signUpHref && (
+              <Link
+                href={signUpHref}
+                className="px-5 py-2.5 rounded-full bg-[#0a3822] hover:bg-[#072818] text-white text-xs font-bold tracking-tight inline-flex items-center gap-1.5 shadow-md hover:shadow-lg transition-all hover:gap-2.5"
+              >
+                <span>Register</span>
+                <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+              </Link>
+            )}
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <div className="lg:hidden flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setIsAiOpen(true)}
-              className="p-2 rounded-xl bg-[#0a3822] text-emerald-400 sm:hidden"
-              aria-label="AI Support"
+          {/* Mobile Right Controls: Sign In + Register + Menu Toggle */}
+          <div className="sm:hidden flex items-center gap-1.5">
+            <Link
+              href={signInHref}
+              className="px-2.5 py-1.5 rounded-full text-[11px] font-bold text-[#0a3822] bg-[#0a3822]/10 hover:bg-[#0a3822]/20 transition-colors"
             >
-              <Bot className="w-5 h-5" />
-            </button>
+              Sign In
+            </Link>
+            {signUpHref && (
+              <Link
+                href={signUpHref}
+                className="px-3 py-1.5 rounded-full bg-[#0a3822] text-white text-[11px] font-bold tracking-tight inline-flex items-center gap-1 shadow-sm"
+              >
+                <span>Register</span>
+              </Link>
+            )}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 rounded-xl bg-[#0a3822]/10 text-[#0a3822] hover:bg-[#0a3822]/20"
+              className="p-2 rounded-xl bg-[#0a3822]/10 text-[#0a3822] hover:bg-[#0a3822]/20 active:scale-95 transition-all"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -209,24 +207,35 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
             >
               Verify Certificate
             </a>
-            <div className="pt-3 border-t border-[#d8e6db] flex flex-col gap-2">
+            <div className="pt-3 border-t border-[#d8e6db] flex flex-col gap-2.5">
+              {signUpHref && (
+                <Link
+                  href={signUpHref}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-3 rounded-full bg-[#0a3822] text-white font-bold text-xs inline-flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all"
+                >
+                  <span>Register Facility</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+                </Link>
+              )}
+              <Link
+                href={signInHref}
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-3 rounded-full bg-white border border-[#0a3822]/20 text-[#0a3822] font-bold text-xs text-center shadow-sm hover:bg-[#f0f6f2] active:scale-95 transition-all"
+              >
+                Sign In to Portal
+              </Link>
               <button
                 type="button"
                 onClick={() => {
                   setMobileMenuOpen(false);
                   setIsAiOpen(true);
                 }}
-                className="w-full py-2.5 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all"
               >
                 <Bot className="w-4 h-4" />
                 <span>Ask Clinical Support AI</span>
               </button>
-              <Link
-                href={signInHref}
-                className="w-full py-2.5 rounded-full bg-[#0a3822] text-white font-bold text-xs text-center"
-              >
-                Sign In to Portal
-              </Link>
             </div>
           </div>
         )}
@@ -656,7 +665,7 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
             <button
               type="button"
               onClick={() => setIsAiOpen(true)}
-              className="px-6 py-3.5 rounded-2xl bg-white hover:bg-zinc-100 text-black font-extrabold text-xs inline-flex items-center gap-2.5 shadow-xl hover:scale-105 transition-all shrink-0"
+              className="w-full sm:w-auto justify-center px-6 py-3.5 rounded-2xl bg-white hover:bg-zinc-100 text-black font-extrabold text-xs inline-flex items-center gap-2.5 shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0"
             >
               <Sparkles className="w-4 h-4 text-emerald-600" />
               <span>Ask AI Assistant</span>
