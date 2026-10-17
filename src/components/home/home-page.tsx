@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { VerifyBox } from "./verify-box";
 import { CustomerSupportAi } from "./customer-support-ai";
+import { LandingShowcaseSections } from "./hero-defi-showcase";
 
 interface HomePageProps {
   signInHref: string;
@@ -586,6 +587,11 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
           </div>
         </div>
       </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 6B. HERO DEFI & DIGITAL EPOCH ECOSYSTEM SHOWCASE              */}
+      {/* ------------------------------------------------------------- */}
+      <LandingShowcaseSections />
 
       {/* ------------------------------------------------------------- */}
       {/* 7. CERTIFICATE VERIFICATION DESK                              */}
