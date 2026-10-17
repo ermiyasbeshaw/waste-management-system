@@ -27,7 +27,6 @@ import {
 } from "lucide-react";
 import { VerifyBox } from "./verify-box";
 import { CustomerSupportAi } from "./customer-support-ai";
-import { LandingShowcaseSections } from "./hero-defi-showcase";
 
 interface HomePageProps {
   signInHref: string;
@@ -99,9 +98,6 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
             </a>
             <a href="#how" className="hover:text-[#0a3822] transition-colors">
               How It Works
-            </a>
-            <a href="#ecosystem" className="hover:text-[#0a3822] transition-colors">
-              RIVR Showcase
             </a>
             <a href="#verify" className="hover:text-[#0a3822] transition-colors">
               Verify Certificate
@@ -192,13 +188,6 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
               className="block py-2 text-sm font-bold text-[#0a3822]"
             >
               How It Works
-            </a>
-            <a
-              href="#ecosystem"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-bold text-[#0a3822]"
-            >
-              RIVR Showcase
             </a>
             <a
               href="#verify"
@@ -597,11 +586,6 @@ export function HomePage({ signInHref, signUpHref = "/sign-up" }: HomePageProps)
           </div>
         </div>
       </section>
-
-      {/* ------------------------------------------------------------- */}
-      {/* 6B. HERO DEFI & DIGITAL EPOCH ECOSYSTEM SHOWCASE              */}
-      {/* ------------------------------------------------------------- */}
-      <LandingShowcaseSections />
 
       {/* ------------------------------------------------------------- */}
       {/* 7. CERTIFICATE VERIFICATION DESK                              */}
