@@ -1,20 +1,19 @@
 import Link from "next/link";
 import { requireAreaAccess } from "@/server/auth/area-guard";
-import { getDisposalRequests, getStockPage } from "@/server/queries/medicine";
+import { getAllAvailableStock, getDisposalRequests } from "@/server/queries/medicine";
 import { RequestForm } from "@/components/medicine/request-form";
 import { RequestsList } from "@/components/medicine/requests-list";
 import { ExportLinks } from "@/components/shared/export-links";
 
 /**
- * /hospital/stock/requests — medicine disposal requests of the facility (CLAUDE.md §12). Only the hospital_admin
- * creates requests (owner decision 11 Oct 2026); staff see them. An approved request appears as pharmaceutical
- * waste on the waiting list.
+ * /hospital/stock/requests — medicine disposal requests of the facility (CLAUDE.md §12). Hospital staff
+ * create disposal requests for all available stock; hospital admin reviews and approves them.
  */
 export default async function HospitalStockRequestsPage() {
   const user = await requireAreaAccess("hospital");
   const isStaff = user.role === "hospital_staff";
-  const [stock, requests] = await Promise.all([
-    getStockPage("all", null, null, 100),
+  const [stockRows, requests] = await Promise.all([
+    getAllAvailableStock(),
     getDisposalRequests(),
   ]);
   return (
@@ -26,7 +25,7 @@ export default async function HospitalStockRequestsPage() {
         <ExportLinks report="medicine-requests" label="requests" />
       </div>
       {isStaff ? (
-        <RequestForm stock={stock.rows.filter((s) => s.quantity > 0)} />
+        <RequestForm stock={stockRows} />
       ) : (
         <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-xs text-zinc-300">
           <p className="font-semibold text-emerald-400">Hospital Administrator Approval Station</p>

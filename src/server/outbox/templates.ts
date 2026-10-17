@@ -221,7 +221,25 @@ export const TEMPLATES = {
       html: `<p>Driver <b>${escapeHtml(d.driverName)}</b> has been assigned to collect medical waste for disposal request <b>${escapeHtml(d.requestCode)}</b> from <b>${escapeHtml(d.facilityName)}</b>.</p>`,
     }),
   }),
-} as const;
+  /** Notification to hospital administrators when staff submits a medicine disposal request. */
+  "disposal.request_created": template({
+    channel: "EMAIL",
+    data: z.object({
+      requestCode: z.string(),
+      facilityName: z.string(),
+      staffName: z.string(),
+      itemCount: z.number().int(),
+      weightKg: z.number(),
+      scheduledDate: z.string().nullable().optional(),
+    }),
+    secrets: [],
+    render: (d) => ({
+      channel: "EMAIL",
+      subject: `New Disposal Request ${d.requestCode} — ${d.facilityName}`,
+      html: `<p>A new medicine disposal request <b>${escapeHtml(d.requestCode)}</b> has been submitted by <b>${escapeHtml(d.staffName)}</b> for <b>${escapeHtml(d.facilityName)}</b>.</p><p>Details: ${d.itemCount} medicine line(s), ${d.weightKg} kg${d.scheduledDate ? `, proposed schedule: <b>${escapeHtml(d.scheduledDate)}</b>` : ""}.</p><p>Please review and approve or reject this request in the SafeWaste Hospital Admin portal.</p>`,
+    }),
+  }),
+};
 
 export type TemplateName = keyof typeof TEMPLATES;
 export type TemplateData<T extends TemplateName> = z.infer<(typeof TEMPLATES)[T]["data"]>;

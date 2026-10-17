@@ -6,6 +6,7 @@ import { decideRequestAction } from "@/app/(desk)/regulator/approvals/actions";
 import { formatDateTime } from "@/lib/dates";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { EmptyState } from "@/components/shared/empty-state";
+import { toEthiopianDate } from "@/lib/ethiopian-calendar";
 import { DisposalQrModal } from "./disposal-qr-modal";
 import type { DisposalRequestRow } from "@/types/view-models";
 
@@ -131,7 +132,12 @@ export function RequestsList({
                 <p className="text-xs text-zinc-400 mt-1">
                   {showFacility ? <strong className="text-zinc-200">{r.facility.name} · </strong> : ""}
                   requested by {r.requestedBy} · {formatDateTime(r.createdAt)}
-                  {r.scheduledDate ? ` · Schedule: ${r.scheduledDate}` : ""} · {r.containerCount}{" "}
+                  {r.scheduledDate ? (
+                    <span>
+                      {" "}· Schedule: <strong className="text-zinc-200 font-mono">{r.scheduledDate}</strong>
+                      {" "}<span className="text-emerald-400 font-semibold font-mono">({toEthiopianDate(r.scheduledDate).formattedAmharic})</span>
+                    </span>
+                  ) : ""} · {r.containerCount}{" "}
                   container(s), {r.weightKg} kg
                 </p>
                 {r.note && <p className="text-xs text-zinc-400 mt-0.5">Note: {r.note}</p>}

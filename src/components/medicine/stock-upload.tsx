@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useTransition, type FormEvent } from "react";
-import { FileSpreadsheet } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { FileSpreadsheet, CheckCircle2 } from "lucide-react";
 import { previewStockAction, saveStockAction } from "@/app/(desk)/hospital/stock/actions";
 import type { ImportPreview } from "@/lib/stock-import";
 
@@ -10,6 +12,7 @@ import type { ImportPreview } from "@/lib/stock-import";
  * is saved while any row has an error; the user fixes the file and uploads again.
  */
 export function StockUpload() {
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<ImportPreview | null>(null);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
@@ -39,10 +42,11 @@ export function StockUpload() {
       if (r.ok) {
         setMessage({
           ok: true,
-          text: `Saved: ${r.data.created} new line(s), ${r.data.updated} updated.`,
+          text: `Successfully saved to database: ${r.data.created} new medicine(s) added, ${r.data.updated} updated.`,
         });
         setPreview(null);
         setFile(null);
+        router.refresh();
       } else setMessage({ ok: false, text: r.message });
     });
 
@@ -160,12 +164,40 @@ export function StockUpload() {
         </div>
       )}
       {message && (
-        <p
+        <div
           role={message.ok ? "status" : "alert"}
-          className={`text-sm ${message.ok ? "text-emerald-300" : "text-rose-300"}`}
+          className={`p-4 rounded-xl text-xs space-y-2.5 ${
+            message.ok
+              ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-300"
+              : "bg-rose-500/10 border border-rose-500/30 text-rose-300"
+          }`}
         >
-          {message.text}
-        </p>
+          <div className="flex items-center gap-2 font-semibold text-sm">
+            {message.ok ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>Inventory Saved to Database</span>
+              </>
+            ) : (
+              <span>Import Error</span>
+            )}
+          </div>
+          <p>{message.text}</p>
+          {message.ok && (
+            <div className="pt-1 flex flex-wrap items-center gap-3">
+              <span className="text-zinc-400">
+                All saved medicines are now viewable and selectable on the Disposal Requests page.
+              </span>
+              <Link
+                href="/hospital/stock/requests"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-500 text-black font-bold text-xs hover:bg-emerald-400 transition-colors shadow"
+              >
+                <span>Go to Disposal Requests</span>
+                <span>→</span>
+              </Link>
+            </div>
+          )}
+        </div>
       )}
     </section>
   );

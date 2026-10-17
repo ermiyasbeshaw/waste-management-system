@@ -119,6 +119,52 @@ export const getStockPage = cache(
   }
 );
 
+/** All active stock lines with positive quantity for the caller's facility (used in disposal requests to view all stock). */
+export const getAllAvailableStock = cache(
+  async (facilityCode: string | null = null): Promise<StockRow[]> => {
+    const { where } = await scope(sql`s.facility_id`, facilityCode);
+    const horizon = await horizonDays();
+    const t = today();
+    const result = await rows<{
+      id: string;
+      facility_id: string;
+      facility_code: string;
+      facility_name: string;
+      item: string;
+      strength: string;
+      form: string;
+      batch: string;
+      quantity: number;
+      unit: string;
+      expiry_date: string;
+      days_left: number;
+      last_alert: number | null;
+    }>(sql`
+      SELECT s.id, f.id AS facility_id, f.code AS facility_code, f.name AS facility_name, s.item, s.strength, s.form,
+             s.batch, s.quantity, s.unit, to_char(s.expiry_date, 'YYYY-MM-DD') AS expiry_date,
+             (s.expiry_date - ${t}::date) AS days_left,
+             (SELECT min(a.threshold_days) FROM medicine_stock_alerts a WHERE a.stock_id = s.id) AS last_alert
+      FROM medicine_stock s JOIN facilities f ON f.id = s.facility_id
+      WHERE s.active AND s.quantity > 0 AND ${where}
+      ORDER BY s.expiry_date ASC, s.item ASC, s.id ASC
+      LIMIT 2000`);
+    return result.map((r) => ({
+      id: r.id,
+      facility: { id: r.facility_id, code: r.facility_code, name: r.facility_name },
+      item: r.item,
+      strength: r.strength,
+      form: r.form,
+      batch: r.batch,
+      quantity: num(r.quantity),
+      unit: r.unit,
+      expiryDate: r.expiry_date,
+      daysLeft: num(r.days_left),
+      state: stateOf(num(r.days_left), horizon),
+      lastAlertDays: r.last_alert === null ? null : num(r.last_alert),
+    }));
+  }
+);
+
 /** Open expiry alerts: lines with stock left that reached a threshold, most urgent first (at most 50). */
 export const getStockAlerts = cache(
   async (facilityCode: string | null = null): Promise<StockAlertRow[]> => {

@@ -86,7 +86,6 @@ export async function RecentWasteWidget() {
   const page = await getHospitalWastePage(null, 10);
   return (
     <div className="space-y-3">
-      <RegisterWasteLink />
       <WasteTable
         rows={page.rows}
         title="Recent Waste Manifests"

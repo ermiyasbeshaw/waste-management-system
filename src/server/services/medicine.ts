@@ -498,6 +498,38 @@ export async function createDisposalRequest(
           },
           requestId: meta.requestId,
         });
+
+        // Notify Hospital Admin(s) of this facility about the newly submitted disposal request
+        const admins = await all<{ email: string }>(
+          tx,
+          sql`SELECT email FROM users WHERE facility_id = ${facilityUser.facilityId} AND role = 'hospital_admin' AND active AND email IS NOT NULL`
+        );
+        const facilityRow = await one<{ name: string }>(
+          tx,
+          sql`SELECT name FROM facilities WHERE id = ${facilityUser.facilityId}`
+        );
+        const facilityName = facilityRow?.name ?? "Hospital";
+        const staffRow = await one<{ full_name: string }>(
+          tx,
+          sql`SELECT full_name FROM users WHERE id = ${facilityUser.id}`
+        );
+        for (const admin of admins) {
+          if (admin.email) {
+            await enqueueMessage(tx, {
+              template: "disposal.request_created",
+              recipient: admin.email,
+              data: {
+                requestCode,
+                facilityName,
+                staffName: staffRow?.full_name ?? "Hospital Staff",
+                itemCount: input.lines.length,
+                weightKg: input.weightKg,
+                scheduledDate: input.scheduledDate ?? null,
+              },
+            });
+          }
+        }
+
         return { status: 201, body: { id: req.id, requestCode, qrCode } };
       }
     );
